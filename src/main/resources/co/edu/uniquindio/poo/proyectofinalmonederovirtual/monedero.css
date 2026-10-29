@@ -1,0 +1,331 @@
+/* ===================== BASE ===================== */
+.root-pane {
+    -fx-background-color: #F4F5FB;
+    -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+.content-scroll,
+.content-scroll > .viewport,
+.content-area {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+}
+
+.title {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E1B4B;
+}
+
+.subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: #8A8FA8;
+}
+
+/* ===================== SIDEBAR ===================== */
+.sidebar {
+    -fx-background-color: linear-gradient(to bottom, #1E1B4B, #312E81);
+}
+
+.logo-icon { -fx-font-size: 26px; }
+
+.logo-text {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.profile-box {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+    -fx-background-radius: 16;
+    -fx-padding: 16;
+}
+
+.avatar {
+    -fx-background-color: linear-gradient(to bottom right, #A29BFE, #6C5CE7);
+    -fx-background-radius: 40;
+    -fx-min-width: 56;
+    -fx-min-height: 56;
+    -fx-alignment: center;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.profile-name {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.profile-mail {
+    -fx-font-size: 11px;
+    -fx-text-fill: #B8B5E8;
+}
+
+.nav-button,
+.nav-button-active {
+    -fx-background-radius: 12;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 12 16 12 16;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+}
+
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #C7C4F0;
+}
+
+.nav-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.12);
+    -fx-text-fill: white;
+}
+
+.nav-button-active {
+    -fx-background-color: linear-gradient(to right, #6C5CE7, #8E7CF8);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(108, 92, 231, 0.55), 14, 0, 0, 4);
+}
+
+.logout-button {
+    -fx-background-color: rgba(255, 118, 117, 0.15);
+    -fx-background-radius: 12;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 12 16 12 16;
+    -fx-text-fill: #FF9F9E;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+}
+
+.logout-button:hover {
+    -fx-background-color: #FF7675;
+    -fx-text-fill: white;
+}
+
+/* ===================== ENCABEZADO ===================== */
+.icon-button {
+    -fx-background-color: white;
+    -fx-background-radius: 14;
+    -fx-padding: 10 14 10 14;
+    -fx-font-size: 16px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(30, 27, 75, 0.08), 10, 0, 0, 2);
+}
+
+.icon-button:hover { -fx-background-color: #EDEBFF; }
+
+.badge-success {
+    -fx-background-color: #D9F7EC;
+    -fx-background-radius: 20;
+    -fx-padding: 7 14 7 14;
+    -fx-text-fill: #00936B;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+/* ===================== TARJETA DE SALDO ===================== */
+.balance-card {
+    -fx-background-color: linear-gradient(to bottom right, #6C5CE7, #4834D4 55%, #00B4D8);
+    -fx-background-radius: 24;
+    -fx-padding: 26;
+    -fx-effect: dropshadow(gaussian, rgba(108, 92, 231, 0.45), 26, 0, 0, 10);
+}
+
+.balance-caption {
+    -fx-font-size: 13px;
+    -fx-text-fill: rgba(255, 255, 255, 0.8);
+}
+
+.balance-amount {
+    -fx-font-size: 38px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.balance-account {
+    -fx-font-size: 12px;
+    -fx-text-fill: rgba(255, 255, 255, 0.75);
+}
+
+.eye-button {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-background-radius: 20;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
+
+.eye-button:hover { -fx-background-color: rgba(255, 255, 255, 0.35); }
+
+.glass-button {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-background-radius: 14;
+    -fx-border-color: rgba(255, 255, 255, 0.35);
+    -fx-border-radius: 14;
+    -fx-padding: 10 20 10 20;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.glass-button:hover { -fx-background-color: rgba(255, 255, 255, 0.35); }
+
+/* ===================== ESTADÍSTICAS ===================== */
+.stat-card-income,
+.stat-card-expense {
+    -fx-background-radius: 24;
+    -fx-padding: 22;
+    -fx-effect: dropshadow(gaussian, rgba(30, 27, 75, 0.12), 18, 0, 0, 6);
+}
+
+.stat-card-income  { -fx-background-color: linear-gradient(to bottom right, #00B894, #55EFC4); }
+.stat-card-expense { -fx-background-color: linear-gradient(to bottom right, #FF7675, #FDCB6E); }
+
+.stat-icon    { -fx-font-size: 26px; }
+.stat-caption { -fx-font-size: 12px; -fx-text-fill: rgba(255, 255, 255, 0.92); }
+
+.stat-value {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+/* ===================== TARJETAS Y FORMULARIOS ===================== */
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 22;
+    -fx-padding: 24;
+    -fx-effect: dropshadow(gaussian, rgba(30, 27, 75, 0.08), 18, 0, 0, 5);
+}
+
+.card-title {
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E1B4B;
+}
+
+.field-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #6B6F8D;
+}
+
+.input,
+.input-combo {
+    -fx-background-color: #F4F5FB;
+    -fx-background-radius: 12;
+    -fx-border-color: transparent;
+    -fx-border-radius: 12;
+    -fx-padding: 10 14 10 14;
+    -fx-font-size: 14px;
+    -fx-text-fill: #1E1B4B;
+    -fx-prompt-text-fill: #A9ADC4;
+}
+
+.input:focused,
+.input-combo:focused {
+    -fx-background-color: white;
+    -fx-border-color: #6C5CE7;
+    -fx-border-width: 2;
+}
+
+.input-combo .list-cell { -fx-background-color: transparent; -fx-text-fill: #1E1B4B; }
+
+.primary-button,
+.success-button {
+    -fx-background-radius: 14;
+    -fx-padding: 13 20 13 20;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
+
+.primary-button {
+    -fx-background-color: linear-gradient(to right, #6C5CE7, #8E7CF8);
+    -fx-effect: dropshadow(gaussian, rgba(108, 92, 231, 0.4), 12, 0, 0, 4);
+}
+
+.primary-button:hover { -fx-background-color: linear-gradient(to right, #5B4BD6, #7D6BE7); }
+
+.success-button {
+    -fx-background-color: linear-gradient(to right, #00B894, #00CEC9);
+    -fx-effect: dropshadow(gaussian, rgba(0, 184, 148, 0.4), 12, 0, 0, 4);
+}
+
+.success-button:hover { -fx-background-color: linear-gradient(to right, #00A383, #00B8B3); }
+
+.chip-button {
+    -fx-background-color: #EDEBFF;
+    -fx-background-radius: 20;
+    -fx-padding: 6 14 6 14;
+    -fx-text-fill: #6C5CE7;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.chip-button:hover {
+    -fx-background-color: #6C5CE7;
+    -fx-text-fill: white;
+}
+
+.message {
+    -fx-font-size: 12px;
+    -fx-text-fill: #00936B;
+}
+
+/* ===================== TABLA ===================== */
+.table-view {
+    -fx-background-color: transparent;
+    -fx-background-radius: 12;
+    -fx-border-color: transparent;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #F4F5FB;
+    -fx-background-radius: 12 12 0 0;
+}
+
+.table-view .column-header,
+.table-view .filler {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-size: 42;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #6B6F8D;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+}
+
+.table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent #F0F1F8 transparent;
+    -fx-cell-size: 44;
+}
+
+.table-row-cell:odd { -fx-background-color: #FBFBFF; }
+
+.table-row-cell:selected,
+.table-row-cell:hover {
+    -fx-background-color: #EDEBFF;
+}
+
+.table-cell {
+    -fx-text-fill: #1E1B4B;
+    -fx-font-size: 13px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 10 0 10;
+}
+
+.table-row-cell:selected .table-cell { -fx-text-fill: #1E1B4B; }
+
+/* Scrollbars discretas */
+.scroll-bar { -fx-background-color: transparent; }
+.scroll-bar .thumb { -fx-background-color: #D5D7EA; -fx-background-radius: 10; }
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button { -fx-padding: 0; }

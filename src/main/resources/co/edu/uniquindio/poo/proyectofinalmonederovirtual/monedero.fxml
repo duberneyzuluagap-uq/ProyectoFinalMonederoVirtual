@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+  Para conectar el controlador, agrega en BorderPane:
+  fx:controller="tu.paquete.MonederoController"
+-->
+
+<BorderPane fx:id="rootPane" prefHeight="720.0" prefWidth="1150.0" styleClass="root-pane" stylesheets="@monedero.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1">
+
+   <!-- ===================== BARRA LATERAL ===================== -->
+   <left>
+      <VBox fx:id="sidebar" prefWidth="240.0" spacing="8.0" styleClass="sidebar">
+         <padding>
+            <Insets bottom="24.0" left="18.0" right="18.0" top="28.0" />
+         </padding>
+         <children>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+               <children>
+                  <Label styleClass="logo-icon" text="💳" />
+                  <Label fx:id="lblLogo" styleClass="logo-text" text="MiMonedero" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="24.0" />
+               </VBox.margin>
+            </HBox>
+
+            <!-- Perfil -->
+            <VBox alignment="CENTER" spacing="6.0" styleClass="profile-box">
+               <children>
+                  <Label fx:id="lblIniciales" styleClass="avatar" text="DZ" />
+                  <Label fx:id="lblUsuario" styleClass="profile-name" text="Usuario" />
+                  <Label fx:id="lblCorreo" styleClass="profile-mail" text="correo@ejemplo.com" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="20.0" />
+               </VBox.margin>
+            </VBox>
+
+            <!-- Navegación -->
+            <Button fx:id="btnInicio" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-button-active" text="🏠  Inicio" />
+            <Button fx:id="btnEnviar" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-button" text="💸  Enviar dinero" />
+            <Button fx:id="btnRecargar" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-button" text="➕  Recargar saldo" />
+            <Button fx:id="btnHistorial" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-button" text="📜  Historial" />
+            <Button fx:id="btnTarjetas" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-button" text="💳  Mis tarjetas" />
+            <Button fx:id="btnConfiguracion" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-button" text="⚙  Configuración" />
+
+            <Region VBox.vgrow="ALWAYS" />
+
+            <Button fx:id="btnCerrarSesion" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="logout-button" text="🚪  Cerrar sesión" />
+         </children>
+      </VBox>
+   </left>
+
+   <!-- ===================== CONTENIDO CENTRAL ===================== -->
+   <center>
+      <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="content-scroll">
+         <content>
+            <VBox spacing="22.0" styleClass="content-area">
+               <padding>
+                  <Insets bottom="30.0" left="32.0" right="32.0" top="28.0" />
+               </padding>
+               <children>
+
+                  <!-- Encabezado -->
+                  <HBox alignment="CENTER_LEFT" spacing="12.0">
+                     <children>
+                        <VBox spacing="2.0">
+                           <children>
+                              <Label fx:id="lblBienvenida" styleClass="title" text="Hola, Usuario 👋" />
+                              <Label fx:id="lblFecha" styleClass="subtitle" text="Así va tu dinero hoy" />
+                           </children>
+                        </VBox>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button fx:id="btnNotificaciones" mnemonicParsing="false" styleClass="icon-button" text="🔔" />
+                        <Label fx:id="lblEstadoCuenta" styleClass="badge-success" text="● Cuenta activa" />
+                     </children>
+                  </HBox>
+
+                  <!-- Tarjeta de saldo + estadísticas -->
+                  <HBox spacing="20.0">
+                     <children>
+                        <VBox prefWidth="520.0" spacing="10.0" styleClass="balance-card" HBox.hgrow="ALWAYS">
+                           <children>
+                              <Label styleClass="balance-caption" text="Saldo disponible" />
+                              <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                 <children>
+                                    <Label fx:id="lblSaldo" styleClass="balance-amount" text="\$ 1.250.000" />
+                                    <Button fx:id="btnToggleSaldo" mnemonicParsing="false" styleClass="eye-button" text="👁" />
+                                 </children>
+                              </HBox>
+                              <Label fx:id="lblNumeroCuenta" styleClass="balance-account" text="N.º de cuenta  •••• •••• 4821" />
+                              <HBox spacing="12.0">
+                                 <children>
+                                    <Button fx:id="btnRecargarRapido" mnemonicParsing="false" styleClass="glass-button" text="➕  Recargar" />
+                                    <Button fx:id="btnEnviarRapido" mnemonicParsing="false" styleClass="glass-button" text="💸  Enviar" />
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets top="10.0" />
+                                 </VBox.margin>
+                              </HBox>
+                           </children>
+                        </VBox>
+
+                        <VBox prefWidth="190.0" spacing="6.0" styleClass="stat-card-income">
+                           <children>
+                              <Label styleClass="stat-icon" text="📈" />
+                              <Label styleClass="stat-caption" text="Ingresos del mes" />
+                              <Label fx:id="lblIngresos" styleClass="stat-value" text="\$ 800.000" />
+                           </children>
+                        </VBox>
+
+                        <VBox prefWidth="190.0" spacing="6.0" styleClass="stat-card-expense">
+                           <children>
+                              <Label styleClass="stat-icon" text="📉" />
+                              <Label styleClass="stat-caption" text="Gastos del mes" />
+                              <Label fx:id="lblGastos" styleClass="stat-value" text="\$ 350.000" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+
+                  <!-- Formularios: enviar y recargar -->
+                  <HBox spacing="20.0">
+                     <children>
+
+                        <!-- Enviar dinero -->
+                        <VBox spacing="10.0" styleClass="card" HBox.hgrow="ALWAYS">
+                           <children>
+                              <Label styleClass="card-title" text="💸  Enviar dinero" />
+                              <Label styleClass="field-label" text="Destinatario" />
+                              <TextField fx:id="txtDestinatario" promptText="N.º de cuenta o correo" styleClass="input" />
+                              <Label styleClass="field-label" text="Monto" />
+                              <TextField fx:id="txtMonto" promptText="\$ 0" styleClass="input" />
+                              <Label styleClass="field-label" text="Concepto" />
+                              <TextField fx:id="txtConcepto" promptText="Ej: pago de almuerzo" styleClass="input" />
+                              <Button fx:id="btnEnviarDinero" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="primary-button" text="Enviar ahora" />
+                              <Label fx:id="lblMensajeEnvio" styleClass="message" />
+                           </children>
+                        </VBox>
+
+                        <!-- Recargar saldo -->
+                        <VBox spacing="10.0" styleClass="card" HBox.hgrow="ALWAYS">
+                           <children>
+                              <Label styleClass="card-title" text="➕  Recargar saldo" />
+                              <Label styleClass="field-label" text="Método de recarga" />
+                              <ComboBox fx:id="cmbMetodoRecarga" maxWidth="1.7976931348623157E308" promptText="Selecciona un método" styleClass="input-combo" />
+                              <Label styleClass="field-label" text="Monto a recargar" />
+                              <TextField fx:id="txtMontoRecarga" promptText="\$ 0" styleClass="input" />
+                              <HBox spacing="8.0">
+                                 <children>
+                                    <Button fx:id="btnMonto20" mnemonicParsing="false" styleClass="chip-button" text="\$ 20.000" />
+                                    <Button fx:id="btnMonto50" mnemonicParsing="false" styleClass="chip-button" text="\$ 50.000" />
+                                    <Button fx:id="btnMonto100" mnemonicParsing="false" styleClass="chip-button" text="\$ 100.000" />
+                                 </children>
+                              </HBox>
+                              <Button fx:id="btnRecargarSaldo" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="success-button" text="Recargar ahora" />
+                              <Label fx:id="lblMensajeRecarga" styleClass="message" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+
+                  <!-- Movimientos -->
+                  <VBox spacing="12.0" styleClass="card">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" spacing="12.0">
+                           <children>
+                              <Label styleClass="card-title" text="📜  Últimos movimientos" />
+                              <Region HBox.hgrow="ALWAYS" />
+                              <TextField fx:id="txtBuscar" prefWidth="200.0" promptText="🔍 Buscar..." styleClass="input" />
+                              <ComboBox fx:id="cmbFiltro" prefWidth="150.0" promptText="Todos" styleClass="input-combo" />
+                           </children>
+                        </HBox>
+                        <TableView fx:id="tblMovimientos" prefHeight="260.0">
+                           <columns>
+                              <TableColumn fx:id="colFecha" prefWidth="150.0" text="Fecha" />
+                              <TableColumn fx:id="colDescripcion" prefWidth="300.0" text="Descripción" />
+                              <TableColumn fx:id="colTipo" prefWidth="140.0" text="Tipo" />
+                              <TableColumn fx:id="colMonto" prefWidth="150.0" text="Monto" />
+                           </columns>
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
+                        </TableView>
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+         </content>
+      </ScrollPane>
+   </center>
+</BorderPane>
