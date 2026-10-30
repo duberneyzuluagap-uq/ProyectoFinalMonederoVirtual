@@ -1,0 +1,104 @@
+
+.login-left {
+    -fx-background-color: linear-gradient(to bottom right, #1E1B4B, #4834D4 60%, #6C5CE7);
+}
+
+.login-brand-title {
+    -fx-font-size: 38px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-line-spacing: 4;
+}
+
+.login-brand-sub {
+    -fx-font-size: 14px;
+    -fx-text-fill: rgba(255, 255, 255, 0.8);
+}
+
+.feature-item {
+    -fx-background-color: rgba(255, 255, 255, 0.12);
+    -fx-background-radius: 14;
+    -fx-padding: 12 18 12 18;
+    -fx-font-size: 13px;
+    -fx-text-fill: white;
+}
+
+/* ===================== FORMULARIO ===================== */
+.password-box {
+    -fx-background-color: #F4F5FB;
+    -fx-background-radius: 12;
+    -fx-padding: 0 8 0 0;
+}
+
+.input-plain,
+.input-plain:focused {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-color: transparent;
+    -fx-padding: 10 14 10 14;
+    -fx-font-size: 14px;
+    -fx-text-fill: #1E1B4B;
+    -fx-prompt-text-fill: #A9ADC4;
+}
+
+.eye-button-dark {
+    -fx-background-color: transparent;
+    -fx-background-radius: 20;
+    -fx-text-fill: #6B6F8D;
+    -fx-cursor: hand;
+}
+
+.eye-button-dark:hover { -fx-background-color: #EDEBFF; }
+
+.login-check {
+    -fx-text-fill: #6B6F8D;
+    -fx-font-size: 12px;
+}
+
+.login-check .box {
+    -fx-background-color: #F4F5FB;
+    -fx-background-radius: 6;
+    -fx-border-color: #D5D7EA;
+    -fx-border-radius: 6;
+}
+
+.login-check:selected .box { -fx-background-color: #6C5CE7; -fx-border-color: #6C5CE7; }
+.login-check:selected .mark { -fx-background-color: white; }
+
+.link-button {
+    -fx-text-fill: #6C5CE7;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.link-button:hover,
+.link-button:visited:hover { -fx-text-fill: #4834D4; -fx-underline: true; }
+.link-button:visited { -fx-text-fill: #6C5CE7; }
+
+.message-error {
+    -fx-font-size: 12px;
+    -fx-text-fill: #FF7675;
+    -fx-font-weight: bold;
+}
+
+.outline-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 14;
+    -fx-border-color: #D5D7EA;
+    -fx-border-radius: 14;
+    -fx-border-width: 2;
+    -fx-padding: 11 20 11 20;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #6C5CE7;
+    -fx-cursor: hand;
+}
+
+.outline-button:hover {
+    -fx-background-color: #EDEBFF;
+    -fx-border-color: #6C5CE7;
+}
+
+.separator .line { -fx-border-color: #E4E6F2; -fx-border-width: 1 0 0 0; }

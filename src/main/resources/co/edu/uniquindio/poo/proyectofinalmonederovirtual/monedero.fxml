@@ -156,7 +156,6 @@
                            <children>
                               <Label styleClass="card-title" text="➕  Recargar saldo" />
                               <Label styleClass="field-label" text="Método de recarga" />
-                              <ComboBox fx:id="cmbMetodoRecarga" maxWidth="1.7976931348623157E308" promptText="Selecciona un método" styleClass="input-combo" />
                               <Label styleClass="field-label" text="Monto a recargar" />
                               <TextField fx:id="txtMontoRecarga" promptText="\$ 0" styleClass="input" />
                               <HBox spacing="8.0">
@@ -166,8 +165,8 @@
                                     <Button fx:id="btnMonto100" mnemonicParsing="false" styleClass="chip-button" text="\$ 100.000" />
                                  </children>
                               </HBox>
-                              <Button fx:id="btnRecargarSaldo" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="success-button" text="Recargar ahora" />
                               <Label fx:id="lblMensajeRecarga" styleClass="message" />
+                              <Button fx:id="btnRecargarSaldo" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="success-button" text="Recargar ahora" />
                            </children>
                         </VBox>
                      </children>

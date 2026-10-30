@@ -1,4 +1,4 @@
-/* ===================== BASE ===================== */
+
 .root-pane {
     -fx-background-color: #F4F5FB;
     -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
@@ -23,7 +23,7 @@
     -fx-text-fill: #8A8FA8;
 }
 
-/* ===================== SIDEBAR ===================== */
+
 .sidebar {
     -fx-background-color: linear-gradient(to bottom, #1E1B4B, #312E81);
 }
@@ -105,7 +105,7 @@
     -fx-text-fill: white;
 }
 
-/* ===================== ENCABEZADO ===================== */
+
 .icon-button {
     -fx-background-color: white;
     -fx-background-radius: 14;
@@ -126,7 +126,7 @@
     -fx-font-weight: bold;
 }
 
-/* ===================== TARJETA DE SALDO ===================== */
+
 .balance-card {
     -fx-background-color: linear-gradient(to bottom right, #6C5CE7, #4834D4 55%, #00B4D8);
     -fx-background-radius: 24;
@@ -172,7 +172,6 @@
 
 .glass-button:hover { -fx-background-color: rgba(255, 255, 255, 0.35); }
 
-/* ===================== ESTADÍSTICAS ===================== */
 .stat-card-income,
 .stat-card-expense {
     -fx-background-radius: 24;

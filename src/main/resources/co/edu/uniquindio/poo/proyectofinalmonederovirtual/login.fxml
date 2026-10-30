@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+
+
+<HBox fx:id="rootLogin" prefHeight="640.0" prefWidth="980.0" styleClass="root-pane" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1">
+   <stylesheets>
+      <URL value="@monedero.css" />
+      <URL value="@login.css" />
+   </stylesheets>
+   <children>
+
+
+      <VBox fx:id="panelMarca" alignment="CENTER_LEFT" prefWidth="430.0" spacing="18.0" styleClass="login-left">
+         <padding>
+            <Insets bottom="40.0" left="48.0" right="40.0" top="40.0" />
+         </padding>
+         <children>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+               <children>
+                  <Label styleClass="logo-icon" text="💳" />
+                  <Label fx:id="lblLogo" styleClass="logo-text" text="MiMonedero" />
+               </children>
+            </HBox>
+
+            <Region prefHeight="30.0" />
+
+            <Label fx:id="lblSlogan" styleClass="login-brand-title" text="Tu dinero,&#10;siempre contigo." wrapText="true" />
+            <Label fx:id="lblDescripcion" styleClass="login-brand-sub" text="Envía, recarga y controla tus movimientos de forma rápida y segura." wrapText="true" />
+
+            <VBox spacing="12.0">
+               <children>
+                  <Label styleClass="feature-item" text="✅  Transferencias al instante" />
+                  <Label styleClass="feature-item" text="🔒  Protección de tus datos" />
+                  <Label styleClass="feature-item" text="📊  Control de ingresos y gastos" />
+               </children>
+               <VBox.margin>
+                  <Insets top="16.0" />
+               </VBox.margin>
+            </VBox>
+         </children>
+      </VBox>
+
+
+      <StackPane fx:id="panelFormulario" HBox.hgrow="ALWAYS">
+         <children>
+            <VBox fx:id="cardLogin" maxHeight="-Infinity" maxWidth="400.0" spacing="10.0" styleClass="card">
+               <padding>
+                  <Insets bottom="32.0" left="32.0" right="32.0" top="32.0" />
+               </padding>
+               <children>
+                  <Label fx:id="lblTituloLogin" styleClass="title" text="Bienvenido 👋" />
+                  <Label fx:id="lblSubtituloLogin" styleClass="subtitle" text="Inicia sesión para acceder a tu monedero">
+                     <VBox.margin>
+                        <Insets bottom="14.0" />
+                     </VBox.margin>
+                  </Label>
+
+
+                  <Label styleClass="field-label" text="Correo o usuario" />
+                  <TextField fx:id="txtUsuario" promptText="ejemplo@correo.com" styleClass="input" />
+
+
+                  <Label styleClass="field-label" text="Contraseña">
+                     <VBox.margin>
+                        <Insets top="6.0" />
+                     </VBox.margin>
+                  </Label>
+                  <HBox alignment="CENTER_LEFT" styleClass="password-box">
+                     <children>
+                        <StackPane HBox.hgrow="ALWAYS">
+                           <children>
+                              <PasswordField fx:id="pfContrasena" promptText="••••••••" styleClass="input-plain" />
+                              <TextField fx:id="txtContrasenaVisible" managed="false" promptText="Tu contraseña" styleClass="input-plain" visible="false" />
+                           </children>
+                        </StackPane>
+                        <Button fx:id="btnMostrarContrasena" mnemonicParsing="false" styleClass="eye-button-dark" text="👁" />
+                     </children>
+                  </HBox>
+
+
+                  <HBox alignment="CENTER_LEFT">
+                     <children>
+                        <Region HBox.hgrow="ALWAYS" />
+                     </children>
+                  </HBox>
+
+
+                  <Label fx:id="lblMensajeError" styleClass="message-error" wrapText="true" />
+
+
+                  <Button fx:id="btnIniciarSesion" defaultButton="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="primary-button" text="Iniciar sesión" />
+
+                  <!-- Separador -->
+                  <HBox alignment="CENTER" spacing="10.0">
+                     <children>
+                        <Separator HBox.hgrow="ALWAYS" />
+                        <Label styleClass="subtitle" text="o" />
+                        <Separator HBox.hgrow="ALWAYS" />
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="2.0" top="4.0" />
+                     </VBox.margin>
+                  </HBox>
+
+                  <!-- Registro -->
+                  <HBox alignment="CENTER" spacing="4.0">
+                     <children>
+                        <Label styleClass="subtitle" text="¿No tienes cuenta?" />
+                        <Hyperlink fx:id="hlRegistrarse" styleClass="link-button" text="Regístrate aquí" />
+                     </children>
+                     <VBox.margin>
+                        <Insets top="6.0" />
+                     </VBox.margin>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+      </StackPane>
+   </children>
+</HBox>

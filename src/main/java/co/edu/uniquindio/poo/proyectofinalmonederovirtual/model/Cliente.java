@@ -1,4 +1,5 @@
 package co.edu.uniquindio.poo.proyectofinalmonederovirtual.model;
 
-public class Cliente {
+public class Cliente extends Usuario {
+
 }
