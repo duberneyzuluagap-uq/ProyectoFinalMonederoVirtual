@@ -52,21 +52,21 @@ public class Banco {
         return "Cliente agregado correctamente";
     }
 
-    public String eliminarCliente(String clave) {
-        Optional<Usuario> encontrado = buscarUsuario(clave);
-        if (encontrado.isEmpty()) return "No existe un cliente con clave " + clave;
+    public String eliminarCliente(String user) {
+        Optional<Usuario> encontrado = buscarUsuario(user);
+        if (encontrado.isEmpty()) return "No existe un cliente con usuario " + user;
         listaUsuarios.remove(encontrado.get());
         return "Cliente eliminado correctamente";
     }
 
-    public Optional<Usuario> buscarUsuario(String clave) {
-        return listaUsuarios.stream().filter(x -> x.getUser().equals(clave)).findFirst();
+    public Optional<Usuario> buscarUsuario(String user) {
+        return listaUsuarios.stream().filter(x -> x.getUser().equals(user)).findFirst();
     }
 
-    public String actualizarCliente(String clave, Cliente nuevo) {
+    public String actualizarCliente(String user, Cliente nuevo) {
         if (nuevo == null) throw new DatosInvalidosException("un cliente no puede ser nulo.");
-        Optional<Usuario> encontrado = buscarUsuario(clave);
-        if (encontrado.isEmpty()) return "No existe un cliente con clave " + clave;
+        Optional<Usuario> encontrado = buscarUsuario(user);
+        if (encontrado.isEmpty()) return "No existe un cliente con usuario " + user;
         listaUsuarios.set(listaUsuarios.indexOf(encontrado.get()), nuevo);
         return "Cliente actualizado correctamente";
     }

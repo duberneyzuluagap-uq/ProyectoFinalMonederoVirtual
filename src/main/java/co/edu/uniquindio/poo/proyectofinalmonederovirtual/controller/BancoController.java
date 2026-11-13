@@ -16,31 +16,6 @@ public class BancoController {
         return banco;
     }
 
-    public boolean iniciarSesion(String user, String password) {
-        Optional<Usuario> usuario = banco.buscarUsuario(user);
-        return usuario.isPresent() && usuario.get().iniciarSesion(user, password);
-    }
-
-    public Optional<Usuario> buscarUsuario(String user) {
-        return banco.buscarUsuario(user);
-    }
-
-    public String registrarUsuario(Usuario usuario) {
-        return banco.registrarUsuario(usuario);
-    }
-
-    public String actualizarCliente(String clave, Cliente nuevo) {
-        return banco.actualizarCliente(clave, nuevo);
-    }
-
-    public String eliminarCliente(String clave) {
-        return banco.eliminarCliente(clave);
-    }
-
-    public List<Usuario> getListaUsuarios() {
-        return banco.getListaUsuarios();
-    }
-
     public String agregarBeneficio(Beneficio beneficio) {
         return banco.agregarBeneficio(beneficio);
     }
@@ -71,5 +46,13 @@ public class BancoController {
 
     public Optional<Monedero> buscarMonedero(String clave) {
         return banco.buscarMonedero(clave);
+    }
+
+    public List<Transaccion> getListaTransacciones() {
+        return banco.getListaTransacciones();
+    }
+
+    public List<Transferencia> getListaTransferencias() {
+        return banco.getListaTransferencias();
     }
 }
