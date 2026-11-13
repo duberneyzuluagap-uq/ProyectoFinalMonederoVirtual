@@ -1,8 +1,5 @@
 package co.edu.uniquindio.poo.proyectofinalmonederovirtual.model;
 
-import co.edu.uniquindio.poo.proyectofinalmonederovirtual.model.DatosInvalidosException;
-
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -44,7 +41,7 @@ public class Banco {
     public List<Transferencia> getListaTransferencias() { return listaTransferencias; }
     public void setListaTransferencias(List<Transferencia> listaTransferencias) { this.listaTransferencias = listaTransferencias; }
 
-
+// CRUD usuario
     public String registrarUsuario(Usuario usuario) {
         if (usuario == null) throw new DatosInvalidosException("un cliente no puede ser nulo.");
         if (buscarUsuario(usuario.getUser()).isPresent()) return "Ya existe un cliente con esa clave: " + usuario.getUser();
@@ -52,26 +49,26 @@ public class Banco {
         return "Cliente agregado correctamente";
     }
 
-    public String eliminarCliente(String user) {
+    public String eliminarUsuario(String user) {
         Optional<Usuario> encontrado = buscarUsuario(user);
-        if (encontrado.isEmpty()) return "No existe un cliente con usuario " + user;
+        if (encontrado.isEmpty()) return "No existe el usuario " + user;
         listaUsuarios.remove(encontrado.get());
-        return "Cliente eliminado correctamente";
+        return "Usuario eliminado correctamente";
     }
 
     public Optional<Usuario> buscarUsuario(String user) {
         return listaUsuarios.stream().filter(x -> x.getUser().equals(user)).findFirst();
     }
 
-    public String actualizarCliente(String user, Cliente nuevo) {
-        if (nuevo == null) throw new DatosInvalidosException("un cliente no puede ser nulo.");
+    public String actualizarUsuario(String user, Usuario nuevo) {
+        if (nuevo == null) throw new DatosInvalidosException("un usuario no puede ser nulo.");
         Optional<Usuario> encontrado = buscarUsuario(user);
-        if (encontrado.isEmpty()) return "No existe un cliente con usuario " + user;
+        if (encontrado.isEmpty()) return "No existe un usuario: " + user;
         listaUsuarios.set(listaUsuarios.indexOf(encontrado.get()), nuevo);
         return "Cliente actualizado correctamente";
     }
 
-
+//CRUD beneficio
     public String agregarBeneficio(Beneficio beneficio) {
         if (beneficio == null) throw new DatosInvalidosException("un beneficio no puede ser nulo.");
         if (buscarBeneficio(beneficio.getIdBeneficio()).isPresent()) return "Ya existe un beneficio con esa clave: " + beneficio.getIdBeneficio();
@@ -98,7 +95,7 @@ public class Banco {
         return "Beneficio actualizado correctamente";
     }
 
-
+//CRUD Monedero
     public String agregarMonedero(Monedero monedero) {
         if (monedero == null) throw new DatosInvalidosException("un monedero no puede ser nulo.");
         if (buscarMonedero(monedero.getNumeroCuenta()).isPresent()) return "Ya existe un monedero con esa clave: " + monedero.getNumeroCuenta();
@@ -125,7 +122,7 @@ public class Banco {
         return "Monedero actualizado correctamente";
     }
 
-
+//CRUD transaccion
     public String agregarTransaccion(Transaccion transaccion) {
         if (transaccion == null) throw new DatosInvalidosException("una transacción no puede ser nulo.");
         if (buscarTransaccion(transaccion.getIdTransaccion()).isPresent()) return "Ya existe una transacción con esa clave: " + transaccion.getIdTransaccion();
@@ -152,7 +149,7 @@ public class Banco {
         return "Transaccion actualizado correctamente";
     }
 
-
+//CRUD transferencia
     public String agregarTransferencia(Transferencia transferencia) {
         if (transferencia == null) throw new DatosInvalidosException("una transferencia no puede ser nulo.");
         if (buscarTransferencia(transferencia.getIdTransaccion()).isPresent()) return "Ya existe una transferencia con esa clave: " + transferencia.getIdTransaccion();

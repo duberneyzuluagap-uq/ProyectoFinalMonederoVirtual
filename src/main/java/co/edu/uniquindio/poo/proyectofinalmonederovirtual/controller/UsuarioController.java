@@ -39,11 +39,11 @@ public class UsuarioController {
     }
 
     public String actualizarCliente(String clave, Cliente nuevo) {
-        return banco.actualizarCliente(clave, nuevo);
+        return banco.actualizarUsuario(clave, nuevo);
     }
 
     public String eliminarCliente(String clave) {
-        return banco.eliminarCliente(clave);
+        return banco.eliminarUsuario(clave);
     }
 
     public List<Usuario> getListaUsuarios() {
