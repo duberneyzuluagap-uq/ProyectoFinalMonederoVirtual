@@ -2,18 +2,22 @@ package co.edu.uniquindio.poo.proyectofinalmonederovirtual.model;
 
 import java.time.LocalDate;
 
-public class TransaccionProgramada implements Comparacion, Comparable<TransaccionProgramada>{
+public class TransaccionProgramada extends Transaccion implements Comparacion, Comparable<TransaccionProgramada>{
 
 
-        private LocalDate fechaEjecucion;
-        private Frecuencia frecuencia;
-        private Transaccion transaccion;
+    private LocalDate fechaEjecucion;
+    private Frecuencia frecuencia;
+    private Transaccion transaccion;
 
-    public TransaccionProgramada(LocalDate fechaEjecucion, Frecuencia frecuencia, Transaccion transaccion) {
-            this.fechaEjecucion = fechaEjecucion;
-            this.frecuencia = frecuencia;
-            this.transaccion = transaccion;
-        }
+    public TransaccionProgramada(String idTransaccion, double monto, LocalDate fecha, EstadoTransaccion estado, boolean sospechosa,
+                                 Monedero monedero, LocalDate fechaEjecucion,
+                                 Frecuencia frecuencia,
+                                 Transaccion transaccion) {
+        super(idTransaccion, monto, fecha, estado, sospechosa, monedero);
+        this.fechaEjecucion = fechaEjecucion;
+        this.frecuencia = frecuencia;
+        this.transaccion = transaccion;
+    }
 
     public LocalDate getFechaEjecucion() { return fechaEjecucion; }
     public void setFechaEjecucion(LocalDate fechaEjecucion) { this.fechaEjecucion = fechaEjecucion; }
@@ -33,4 +37,13 @@ public class TransaccionProgramada implements Comparacion, Comparable<Transaccio
         }
 
 
+    @Override
+    public void ejecutar() {
+
+    }
+
+    @Override
+    public int calcularPuntos() {
+        return 0;
+    }
 }
