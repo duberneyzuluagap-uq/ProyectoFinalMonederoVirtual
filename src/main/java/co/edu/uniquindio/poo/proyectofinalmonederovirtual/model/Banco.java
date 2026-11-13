@@ -33,8 +33,8 @@ public class Banco {
     public void setNombre(String nombre) { this.nombre = nombre; }
     public String getNit() { return nit; }
     public void setNit(String nit) { this.nit = nit; }
-    public List<Cliente> getListaUsuarios() { return listaUsuarios; }
-    public void setListaUsuarios(List<Cliente> listaUsuarios) { this.listaUsuarios = listaUsuarios; }
+    public List<Usuario> getListaUsuarios() { return listaUsuarios; }
+    public void setListaUsuarios(List<Usuario> listaUsuarios) { this.listaUsuarios = listaUsuarios; }
     public List<Beneficio> getListaBeneficios() { return listaBeneficios; }
     public void setListaBeneficios(List<Beneficio> listaBeneficios) { this.listaBeneficios = listaBeneficios; }
     public List<Monedero> getListaMonederos() { return listaMonederos; }
@@ -178,6 +178,7 @@ public class Banco {
         listaTransferencias.set(listaTransferencias.indexOf(encontrado.get()), nuevo);
         return "Transferencia actualizado correctamente";
     }
+
 
 
 
