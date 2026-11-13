@@ -1,52 +1,216 @@
 package co.edu.uniquindio.poo.proyectofinalmonederovirtual.model;
 
+import co.edu.uniquindio.poo.proyectofinalmonederovirtual.model.DatosInvalidosException;
+
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 public class Banco {
     private String nombre;
-    private String id;
+    private String nit;
 
-    private List<Cliente> ListaClientes;
-    private List<Transferencia> ListaTransferencias;
+    private List<Cliente> listaClientes;
+    private List<Admin> listaAdmins;
+    private List<Beneficio> listaBeneficios;
+    private List<Monedero> listaMonederos;
+    private List<Transaccion> listaTransacciones;
+    private List<Transferencia> listaTransferencias;
 
-    public Banco(String nombre, String id) {
+    public Banco(String nombre, String nit) {
+        if (nombre == null || nombre.isBlank()) throw new DatosInvalidosException("El nombre del banco es obligatorio.");
+        if (nit == null || nit.isBlank()) throw new DatosInvalidosException("El NIT es obligatorio.");
         this.nombre = nombre;
-        this.id = id;
-        ListaClientes = new ArrayList<>();
-        ListaTransferencias = new ArrayList<>();
+        this.nit = nit;
+        this.listaClientes = new LinkedList<>();
+        this.listaAdmins = new LinkedList<>();
+        this.listaBeneficios = new LinkedList<>();
+        this.listaMonederos = new LinkedList<>();
+        this.listaTransacciones = new LinkedList<>();
+        this.listaTransferencias = new LinkedList<>();
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+    public String getNit() { return nit; }
+    public void setNit(String nit) { this.nit = nit; }
+    public List<Cliente> getListaClientes() { return listaClientes; }
+    public void setListaClientes(List<Cliente> listaClientes) { this.listaClientes = listaClientes; }
+    public List<Admin> getListaAdmins() { return listaAdmins; }
+    public void setListaAdmins(List<Admin> listaAdmins) { this.listaAdmins = listaAdmins; }
+    public List<Beneficio> getListaBeneficios() { return listaBeneficios; }
+    public void setListaBeneficios(List<Beneficio> listaBeneficios) { this.listaBeneficios = listaBeneficios; }
+    public List<Monedero> getListaMonederos() { return listaMonederos; }
+    public void setListaMonederos(List<Monedero> listaMonederos) { this.listaMonederos = listaMonederos; }
+    public List<Transaccion> getListaTransacciones() { return listaTransacciones; }
+    public void setListaTransacciones(List<Transaccion> listaTransacciones) { this.listaTransacciones = listaTransacciones; }
+    public List<Transferencia> getListaTransferencias() { return listaTransferencias; }
+    public void setListaTransferencias(List<Transferencia> listaTransferencias) { this.listaTransferencias = listaTransferencias; }
+
+
+    public String agregarCliente(Cliente cliente) {
+        if (cliente == null) throw new DatosInvalidosException("un cliente no puede ser nulo.");
+        if (buscarCliente(cliente.getDocumento()).isPresent()) return "Ya existe un cliente con esa clave: " + cliente.getDocumento();
+        listaClientes.add(cliente);
+        return "Cliente agregado correctamente";
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public String eliminarCliente(String clave) {
+        Optional<Cliente> encontrado = buscarCliente(clave);
+        if (encontrado.isEmpty()) return "No existe un cliente con clave " + clave;
+        listaClientes.remove(encontrado.get());
+        return "Cliente eliminado correctamente";
     }
 
-    public String getId() {
-        return id;
+    public Optional<Cliente> buscarCliente(String clave) {
+        return listaClientes.stream().filter(x -> x.getDocumento().equals(clave)).findFirst();
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public String actualizarCliente(String clave, Cliente nuevo) {
+        if (nuevo == null) throw new DatosInvalidosException("un cliente no puede ser nulo.");
+        Optional<Cliente> encontrado = buscarCliente(clave);
+        if (encontrado.isEmpty()) return "No existe un cliente con clave " + clave;
+        listaClientes.set(listaClientes.indexOf(encontrado.get()), nuevo);
+        return "Cliente actualizado correctamente";
     }
 
-    public List<Cliente> getListaClientes() {
-        return ListaClientes;
+
+    public String agregarAdmin(Admin admin) {
+        if (admin == null) throw new DatosInvalidosException("un administrador no puede ser nulo.");
+        if (buscarAdmin(admin.getUser()).isPresent()) return "Ya existe un administrador con esa clave: " + admin.getUser();
+        listaAdmins.add(admin);
+        return "Admin agregado correctamente";
     }
 
-    public void setListaClientes(List<Cliente> listaClientes) {
-        ListaClientes = listaClientes;
+    public String eliminarAdmin(String clave) {
+        Optional<Admin> encontrado = buscarAdmin(clave);
+        if (encontrado.isEmpty()) return "No existe un administrador con clave " + clave;
+        listaAdmins.remove(encontrado.get());
+        return "Admin eliminado correctamente";
     }
 
-    public List<Transferencia> getListaTransferencias() {
-        return ListaTransferencias;
+    public Optional<Admin> buscarAdmin(String clave) {
+        return listaAdmins.stream().filter(x -> x.getUser().equals(clave)).findFirst();
     }
 
-    public void setListaTransferencias(List<Transferencia> listaTransferencias) {
-        ListaTransferencias = listaTransferencias;
+    public String actualizarAdmin(String clave, Admin nuevo) {
+        if (nuevo == null) throw new DatosInvalidosException("un administrador no puede ser nulo.");
+        Optional<Admin> encontrado = buscarAdmin(clave);
+        if (encontrado.isEmpty()) return "No existe un administrador con clave " + clave;
+        listaAdmins.set(listaAdmins.indexOf(encontrado.get()), nuevo);
+        return "Admin actualizado correctamente";
     }
+
+
+    public String agregarBeneficio(Beneficio beneficio) {
+        if (beneficio == null) throw new DatosInvalidosException("un beneficio no puede ser nulo.");
+        if (buscarBeneficio(beneficio.getIdBeneficio()).isPresent()) return "Ya existe un beneficio con esa clave: " + beneficio.getIdBeneficio();
+        listaBeneficios.add(beneficio);
+        return "Beneficio agregado correctamente";
+    }
+
+    public String eliminarBeneficio(String clave) {
+        Optional<Beneficio> encontrado = buscarBeneficio(clave);
+        if (encontrado.isEmpty()) return "No existe un beneficio con clave " + clave;
+        listaBeneficios.remove(encontrado.get());
+        return "Beneficio eliminado correctamente";
+    }
+
+    public Optional<Beneficio> buscarBeneficio(String clave) {
+        return listaBeneficios.stream().filter(x -> x.getIdBeneficio().equals(clave)).findFirst();
+    }
+
+    public String actualizarBeneficio(String clave, Beneficio nuevo) {
+        if (nuevo == null) throw new DatosInvalidosException("un beneficio no puede ser nulo.");
+        Optional<Beneficio> encontrado = buscarBeneficio(clave);
+        if (encontrado.isEmpty()) return "No existe un beneficio con clave " + clave;
+        listaBeneficios.set(listaBeneficios.indexOf(encontrado.get()), nuevo);
+        return "Beneficio actualizado correctamente";
+    }
+
+
+    public String agregarMonedero(Monedero monedero) {
+        if (monedero == null) throw new DatosInvalidosException("un monedero no puede ser nulo.");
+        if (buscarMonedero(monedero.getNumeroCuenta()).isPresent()) return "Ya existe un monedero con esa clave: " + monedero.getNumeroCuenta();
+        listaMonederos.add(monedero);
+        return "Monedero agregado correctamente";
+    }
+
+    public String eliminarMonedero(String clave) {
+        Optional<Monedero> encontrado = buscarMonedero(clave);
+        if (encontrado.isEmpty()) return "No existe un monedero con clave " + clave;
+        listaMonederos.remove(encontrado.get());
+        return "Monedero eliminado correctamente";
+    }
+
+    public Optional<Monedero> buscarMonedero(String clave) {
+        return listaMonederos.stream().filter(x -> x.getNumeroCuenta().equals(clave)).findFirst();
+    }
+
+    public String actualizarMonedero(String clave, Monedero nuevo) {
+        if (nuevo == null) throw new DatosInvalidosException("un monedero no puede ser nulo.");
+        Optional<Monedero> encontrado = buscarMonedero(clave);
+        if (encontrado.isEmpty()) return "No existe un monedero con clave " + clave;
+        listaMonederos.set(listaMonederos.indexOf(encontrado.get()), nuevo);
+        return "Monedero actualizado correctamente";
+    }
+
+
+    public String agregarTransaccion(Transaccion transaccion) {
+        if (transaccion == null) throw new DatosInvalidosException("una transacción no puede ser nulo.");
+        if (buscarTransaccion(transaccion.getIdTransaccion()).isPresent()) return "Ya existe una transacción con esa clave: " + transaccion.getIdTransaccion();
+        listaTransacciones.add(transaccion);
+        return "Transaccion agregado correctamente";
+    }
+
+    public String eliminarTransaccion(String clave) {
+        Optional<Transaccion> encontrado = buscarTransaccion(clave);
+        if (encontrado.isEmpty()) return "No existe una transacción con clave " + clave;
+        listaTransacciones.remove(encontrado.get());
+        return "Transaccion eliminado correctamente";
+    }
+
+    public Optional<Transaccion> buscarTransaccion(String clave) {
+        return listaTransacciones.stream().filter(x -> x.getIdTransaccion().equals(clave)).findFirst();
+    }
+
+    public String actualizarTransaccion(String clave, Transaccion nuevo) {
+        if (nuevo == null) throw new DatosInvalidosException("una transacción no puede ser nulo.");
+        Optional<Transaccion> encontrado = buscarTransaccion(clave);
+        if (encontrado.isEmpty()) return "No existe una transacción con clave " + clave;
+        listaTransacciones.set(listaTransacciones.indexOf(encontrado.get()), nuevo);
+        return "Transaccion actualizado correctamente";
+    }
+
+
+    public String agregarTransferencia(Transferencia transferencia) {
+        if (transferencia == null) throw new DatosInvalidosException("una transferencia no puede ser nulo.");
+        if (buscarTransferencia(transferencia.getIdTransaccion()).isPresent()) return "Ya existe una transferencia con esa clave: " + transferencia.getIdTransaccion();
+        listaTransferencias.add(transferencia);
+        return "Transferencia agregado correctamente";
+    }
+
+    public String eliminarTransferencia(String clave) {
+        Optional<Transferencia> encontrado = buscarTransferencia(clave);
+        if (encontrado.isEmpty()) return "No existe una transferencia con clave " + clave;
+        listaTransferencias.remove(encontrado.get());
+        return "Transferencia eliminado correctamente";
+    }
+
+    public Optional<Transferencia> buscarTransferencia(String clave) {
+        return listaTransferencias.stream().filter(x -> x.getIdTransaccion().equals(clave)).findFirst();
+    }
+
+    public String actualizarTransferencia(String clave, Transferencia nuevo) {
+        if (nuevo == null) throw new DatosInvalidosException("una transferencia no puede ser nulo.");
+        Optional<Transferencia> encontrado = buscarTransferencia(clave);
+        if (encontrado.isEmpty()) return "No existe una transferencia con clave " + clave;
+        listaTransferencias.set(listaTransferencias.indexOf(encontrado.get()), nuevo);
+        return "Transferencia actualizado correctamente";
+    }
+
+
+
 }
 
