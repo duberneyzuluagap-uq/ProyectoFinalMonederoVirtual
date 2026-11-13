@@ -11,8 +11,7 @@ public class Banco {
     private String nombre;
     private String nit;
 
-    private List<Cliente> listaClientes;
-    private List<Admin> listaAdmins;
+    private List<Usuario> listaUsuarios;
     private List<Beneficio> listaBeneficios;
     private List<Monedero> listaMonederos;
     private List<Transaccion> listaTransacciones;
@@ -23,8 +22,7 @@ public class Banco {
         if (nit == null || nit.isBlank()) throw new DatosInvalidosException("El NIT es obligatorio.");
         this.nombre = nombre;
         this.nit = nit;
-        this.listaClientes = new LinkedList<>();
-        this.listaAdmins = new LinkedList<>();
+        this.listaUsuarios = new LinkedList<>();
         this.listaBeneficios = new LinkedList<>();
         this.listaMonederos = new LinkedList<>();
         this.listaTransacciones = new LinkedList<>();
@@ -35,10 +33,8 @@ public class Banco {
     public void setNombre(String nombre) { this.nombre = nombre; }
     public String getNit() { return nit; }
     public void setNit(String nit) { this.nit = nit; }
-    public List<Cliente> getListaClientes() { return listaClientes; }
-    public void setListaClientes(List<Cliente> listaClientes) { this.listaClientes = listaClientes; }
-    public List<Admin> getListaAdmins() { return listaAdmins; }
-    public void setListaAdmins(List<Admin> listaAdmins) { this.listaAdmins = listaAdmins; }
+    public List<Cliente> getListaUsuarios() { return listaUsuarios; }
+    public void setListaUsuarios(List<Cliente> listaUsuarios) { this.listaUsuarios = listaUsuarios; }
     public List<Beneficio> getListaBeneficios() { return listaBeneficios; }
     public void setListaBeneficios(List<Beneficio> listaBeneficios) { this.listaBeneficios = listaBeneficios; }
     public List<Monedero> getListaMonederos() { return listaMonederos; }
@@ -49,57 +45,30 @@ public class Banco {
     public void setListaTransferencias(List<Transferencia> listaTransferencias) { this.listaTransferencias = listaTransferencias; }
 
 
-    public String agregarCliente(Cliente cliente) {
-        if (cliente == null) throw new DatosInvalidosException("un cliente no puede ser nulo.");
-        if (buscarCliente(cliente.getDocumento()).isPresent()) return "Ya existe un cliente con esa clave: " + cliente.getDocumento();
-        listaClientes.add(cliente);
+    public String registrarUsuario(Usuario usuario) {
+        if (usuario == null) throw new DatosInvalidosException("un cliente no puede ser nulo.");
+        if (buscarUsuario(usuario.getUser()).isPresent()) return "Ya existe un cliente con esa clave: " + usuario.getUser();
+        listaUsuarios.add(usuario);
         return "Cliente agregado correctamente";
     }
 
     public String eliminarCliente(String clave) {
-        Optional<Cliente> encontrado = buscarCliente(clave);
+        Optional<Usuario> encontrado = buscarUsuario(clave);
         if (encontrado.isEmpty()) return "No existe un cliente con clave " + clave;
-        listaClientes.remove(encontrado.get());
+        listaUsuarios.remove(encontrado.get());
         return "Cliente eliminado correctamente";
     }
 
-    public Optional<Cliente> buscarCliente(String clave) {
-        return listaClientes.stream().filter(x -> x.getDocumento().equals(clave)).findFirst();
+    public Optional<Usuario> buscarUsuario(String clave) {
+        return listaUsuarios.stream().filter(x -> x.getUser().equals(clave)).findFirst();
     }
 
     public String actualizarCliente(String clave, Cliente nuevo) {
         if (nuevo == null) throw new DatosInvalidosException("un cliente no puede ser nulo.");
-        Optional<Cliente> encontrado = buscarCliente(clave);
+        Optional<Usuario> encontrado = buscarUsuario(clave);
         if (encontrado.isEmpty()) return "No existe un cliente con clave " + clave;
-        listaClientes.set(listaClientes.indexOf(encontrado.get()), nuevo);
+        listaUsuarios.set(listaUsuarios.indexOf(encontrado.get()), nuevo);
         return "Cliente actualizado correctamente";
-    }
-
-
-    public String agregarAdmin(Admin admin) {
-        if (admin == null) throw new DatosInvalidosException("un administrador no puede ser nulo.");
-        if (buscarAdmin(admin.getUser()).isPresent()) return "Ya existe un administrador con esa clave: " + admin.getUser();
-        listaAdmins.add(admin);
-        return "Admin agregado correctamente";
-    }
-
-    public String eliminarAdmin(String clave) {
-        Optional<Admin> encontrado = buscarAdmin(clave);
-        if (encontrado.isEmpty()) return "No existe un administrador con clave " + clave;
-        listaAdmins.remove(encontrado.get());
-        return "Admin eliminado correctamente";
-    }
-
-    public Optional<Admin> buscarAdmin(String clave) {
-        return listaAdmins.stream().filter(x -> x.getUser().equals(clave)).findFirst();
-    }
-
-    public String actualizarAdmin(String clave, Admin nuevo) {
-        if (nuevo == null) throw new DatosInvalidosException("un administrador no puede ser nulo.");
-        Optional<Admin> encontrado = buscarAdmin(clave);
-        if (encontrado.isEmpty()) return "No existe un administrador con clave " + clave;
-        listaAdmins.set(listaAdmins.indexOf(encontrado.get()), nuevo);
-        return "Admin actualizado correctamente";
     }
 
 
