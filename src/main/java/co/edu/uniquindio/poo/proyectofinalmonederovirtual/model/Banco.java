@@ -1,5 +1,6 @@
 package co.edu.uniquindio.poo.proyectofinalmonederovirtual.model;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -32,7 +33,7 @@ public class Banco {
     public void setNit(String nit) { this.nit = nit; }
     public List<Usuario> getListaUsuarios() { return listaUsuarios; }
     public void setListaUsuarios(List<Usuario> listaUsuarios) { this.listaUsuarios = listaUsuarios; }
-    public List<Beneficio> getListaBeneficios() { return listaBeneficios; }
+    public List<Beneficio> getListaBeneficios() { return Collections.unmodifiableList(listaBeneficios); }
     public void setListaBeneficios(List<Beneficio> listaBeneficios) { this.listaBeneficios = listaBeneficios; }
     public List<Monedero> getListaMonederos() { return listaMonederos; }
     public void setListaMonederos(List<Monedero> listaMonederos) { this.listaMonederos = listaMonederos; }

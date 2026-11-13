@@ -39,11 +39,11 @@ public class TransaccionProgramada extends Transaccion implements Comparacion, C
 
     @Override
     public void ejecutar() {
-
+        getTransaccion().ejecutar();
     }
 
     @Override
     public int calcularPuntos() {
-        return 0;
+        return getTransaccion().calcularPuntos();
     }
 }
