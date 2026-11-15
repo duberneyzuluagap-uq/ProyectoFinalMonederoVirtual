@@ -30,7 +30,6 @@ public abstract class Transaccion {
     public String getIdTransaccion() { return idTransaccion; }
     public void setIdTransaccion(String idTransaccion) { this.idTransaccion = idTransaccion; }
     public double getMonto() { return monto; }
-    public void setMonto(double monto) { this.monto = monto; }
     public LocalDate getFecha() { return fecha; }
     public void setFecha(LocalDate fecha) { this.fecha = fecha; }
     public EstadoTransaccion getEstado() { return estado; }

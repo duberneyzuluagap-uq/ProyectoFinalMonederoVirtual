@@ -2,7 +2,7 @@ package co.edu.uniquindio.poo.proyectofinalmonederovirtual.model;
 
 import java.time.LocalDate;
 
-public class TransaccionProgramada extends Transaccion implements Comparacion, Comparable<TransaccionProgramada>{
+public class TransaccionProgramada extends Transaccion implements Comparable<TransaccionProgramada>{
 
 
     private LocalDate fechaEjecucion;
@@ -29,11 +29,6 @@ public class TransaccionProgramada extends Transaccion implements Comparacion, C
         @Override
         public int compareTo(TransaccionProgramada otra) {
             return fechaEjecucion.compareTo(otra.fechaEjecucion);
-        }
-
-        @Override
-        public int comparteTo(TransaccionProgramada otra) {
-            return compareTo(otra);
         }
 
 

@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class ProcesadorTransaccionesProgramadas {
+    private static final int MAX_EJECUCIONES = 12;
     private Notificacion notificacion;
 
     public ProcesadorTransaccionesProgramadas(Notificacion notificacion) {
@@ -23,17 +24,19 @@ public class ProcesadorTransaccionesProgramadas {
 
     public void procesarPendientes(Cliente cliente, LocalDate hoy) {
         for (TransaccionProgramada programada : ordenarPorFecha(cliente.getListaTransaccionesProgramadas())) {
-            while (!programada.getFechaEjecucion().isAfter(hoy)) {
+            int ejecuciones = 0;
+            while (!programada.getFechaEjecucion().isAfter(hoy) && ejecuciones < MAX_EJECUCIONES) {
                 try {
                     cliente.registrarTransaccion(programada.getTransaccion());
                     notificar(cliente, "Se ejecutó la transacción programada "
                             + programada.getTransaccion().getIdTransaccion() + " del "
                             + programada.getFechaEjecucion());
-                } catch (SaldoInsuficienteException | MontoInvalidoException | MonederoInexistenteException e) {
+                } catch (SaldoInsuficienteException | MontoInvalidoException | MonederoInexistenteException | DatosInvalidosException e) {
                     notificar(cliente, "No se pudo ejecutar la transacción programada "
                             + programada.getTransaccion().getIdTransaccion() + ": " + e.getMessage());
                 }
                 programada.setFechaEjecucion(siguienteFecha(programada.getFechaEjecucion(), programada.getFrecuencia()));
+                ejecuciones++;
             }
         }
     }

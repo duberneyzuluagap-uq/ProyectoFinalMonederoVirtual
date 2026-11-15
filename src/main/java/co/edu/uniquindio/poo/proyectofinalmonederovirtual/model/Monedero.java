@@ -17,7 +17,6 @@ public abstract class Monedero {
     public String getNumeroCuenta() { return numeroCuenta; }
     public void setNumeroCuenta(String numeroCuenta) { this.numeroCuenta = numeroCuenta; }
     public double getSaldo() { return saldo; }
-    public void setSaldo(double saldo) { this.saldo = saldo; }
 
     public void depositar(double monto) {
         if (monto <= 0) throw new MontoInvalidoException("El monto a depositar debe ser mayor que cero.");

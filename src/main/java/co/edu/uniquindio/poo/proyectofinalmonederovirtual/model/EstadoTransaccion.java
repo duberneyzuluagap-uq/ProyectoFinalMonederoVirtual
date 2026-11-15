@@ -1,13 +1,9 @@
 package co.edu.uniquindio.poo.proyectofinalmonederovirtual.model;
 
-/**
- * Enum que representa el estado actual de una transacción.
- */
-public enum EstadoTransaccion {
 
-    RECIBIDA("Recibida"),
-    ENVIADA("Enviada"),
-    CANCELADA("Cancelada");
+public enum EstadoTransaccion {
+    RECIBIDA("Recibida"), ENVIADA("Enviada"), CANCELADA("Cancelada"),
+    REVERTIDA("Revertida"), COMPLETADA("Completada"), FALLIDA("Fallida");
 
     private final String etiqueta;
 

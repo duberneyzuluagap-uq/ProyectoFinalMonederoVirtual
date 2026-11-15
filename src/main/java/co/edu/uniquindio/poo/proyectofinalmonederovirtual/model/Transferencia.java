@@ -46,7 +46,7 @@ public class Transferencia extends Transaccion {
             throw new SaldoInsuficienteException("El monedero destino ya no tiene saldo para revertir la transferencia.");
         monederoDestino.retirar(getMonto());
         getMonedero().depositar(getMonto() + comision);
-        setEstado(EstadoTransaccion.CANCELADA);
+        setEstado(EstadoTransaccion.REVERTIDA);
     }
 
 

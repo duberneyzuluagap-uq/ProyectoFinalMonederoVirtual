@@ -45,7 +45,6 @@ public class Cliente extends Usuario {
     public String getTelefono() { return telefono; }
     public void setTelefono(String telefono) { this.telefono = telefono; }
     public int getPuntosAcumulados() { return puntosAcumulados; }
-    public void setPuntosAcumulados(int puntosAcumulados) { this.puntosAcumulados = puntosAcumulados; }
     public RangoCliente getRango() { return rango; }
     public void setRango(RangoCliente rango) { this.rango = rango; }
     public List<Monedero> getListaMonederos() { return listaMonederos; }

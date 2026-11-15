@@ -9,7 +9,7 @@ public class AnalizadorGastos {
     public Map<String, Double> generarReporteGastos(Cliente cliente) {
         Map<String, Double> porTipo = cliente.getListaTransacciones().stream()
                 .filter(t -> t instanceof Retiro || t instanceof Transferencia)
-                .filter(t -> t.getEstado() != EstadoTransaccion.CANCELADA)
+                .filter(t -> t.getEstado() != EstadoTransaccion.CANCELADA  && t.getEstado() != EstadoTransaccion.REVERTIDA)
                 .collect(Collectors.groupingBy(t -> t.getClass().getSimpleName(), TreeMap::new,
                         Collectors.summingDouble(Transaccion::getMonto)));
         double total = porTipo.values().stream().mapToDouble(Double::doubleValue).sum();

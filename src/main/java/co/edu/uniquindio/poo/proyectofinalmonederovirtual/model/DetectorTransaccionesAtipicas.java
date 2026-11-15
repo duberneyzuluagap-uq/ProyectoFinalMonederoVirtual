@@ -20,18 +20,22 @@ public class DetectorTransaccionesAtipicas {
         return Math.sqrt(sumaCuadrados / montos.size());
     }
 
-
-    public boolean esAtipica(double monto, List<Transaccion> historial) {
-        if (historial.size() < 2) return false;
-        List<Double> montos = historial.stream().map(Transaccion::getMonto).toList();
+    private double calcularUmbral(List<Transaccion> historial) {
+        List<Double> montos = historial.stream()
+                .map(t -> t.getMonto()).toList();
         double promedio = calcularPromedio(montos);
-        return monto > promedio + 2 * calcularDesviacion(montos, promedio);
+        return promedio + 2 * calcularDesviacion(montos, promedio);
+    }
+
+    public boolean esAtipica(Transaccion transaccion, List<Transaccion> historial) {
+        if (historial.size() < 2) return false;
+        return transaccion.getMonto() > calcularUmbral(historial);
     }
 
 
     public List<Transaccion> detectar(Cliente cliente) {
         List<Transaccion> historial = cliente.getListaTransacciones().stream()
-                .filter(t -> t.getEstado() != EstadoTransaccion.CANCELADA)
+                .filter(t -> t.getEstado() != EstadoTransaccion.CANCELADA  && t.getEstado() != EstadoTransaccion.REVERTIDA)
                 .toList();
         if (historial.size() < 2) return List.of();
         List<Double> montos = historial.stream().map(Transaccion::getMonto).toList();
