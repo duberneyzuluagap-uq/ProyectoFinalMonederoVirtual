@@ -15,7 +15,7 @@ public class DetectorAtipicasController {
         return detector.detectar(cliente);
     }
 
-    public boolean esAtipica(double monto, List<Transaccion> historial) {
-        return detector.esAtipica(monto, historial);
+    public boolean esAtipica(Transaccion transaccion, List<Transaccion> historial) {
+        return detector.esAtipica(transaccion, historial);
     }
 }
