@@ -17,8 +17,9 @@ class OperacionControllerTest {
     void preparar() {
         banco = new Banco("MiMonedero", "900123456-7");
         notif = new NotificacionFalsa();
+        ProcesadorTransaccionesProgramadas proc = new ProcesadorTransaccionesProgramadas(notif);
         op = new OperacionController(banco, new TransaccionController(banco), new MonederoController(banco),
-                new AlertaController(), new DetectorAtipicasController(notif), notif);
+                new AlertaController(), new DetectorAtipicasController(notif), notif, proc);
         ana = op.registrarCliente("Ana Pérez", "ana", "1234", "ana@mail.com", "1001001001", "Calle 1", "3001112233");
         luis = op.registrarCliente("Luis Gómez", "luis", "1234", "luis@mail.com", "2002002002", "Calle 2", "3109998877");
         anaM = ana.getListaMonederos().get(0);

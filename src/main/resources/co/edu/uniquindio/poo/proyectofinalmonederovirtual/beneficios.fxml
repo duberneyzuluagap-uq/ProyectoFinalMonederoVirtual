@@ -5,12 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<!--
-  Para conectar el controlador, agrega en BorderPane:
-  fx:controller="tu.paquete.BeneficiosController"
--->
-
-<BorderPane fx:id="rootBeneficios" prefHeight="780.0" prefWidth="1200.0" styleClass="root-pane" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane fx:id="rootBeneficios" fx:controller="co.edu.uniquindio.poo.proyectofinalmonederovirtual.viewController.BeneficiosViewController" prefHeight="780.0" prefWidth="1200.0" styleClass="root-pane" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
    <stylesheets>
       <URL value="@monedero.css" />
       <URL value="@extras.css" />

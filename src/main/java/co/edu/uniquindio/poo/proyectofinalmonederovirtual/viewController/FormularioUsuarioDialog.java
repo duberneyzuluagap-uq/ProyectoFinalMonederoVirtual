@@ -60,28 +60,32 @@ public final class FormularioUsuarioDialog {
         }
         dialogo.getDialogPane().setContent(grid);
 
-        Usuario[] resultado = new Usuario[1];
+        // Mientras el usuario no dé OK se revisan los campos: si algo está mal
+        // se muestra el error y ev.consume() impide que el diálogo se cierre.
         dialogo.getDialogPane().lookupButton(ButtonType.OK).addEventFilter(ActionEvent.ACTION, ev -> {
-            String error = ViewUtil.intentar(() -> {
+            try {
                 if (existente != null) {
                     App.getOperacionController().actualizarUsuario(existente, nombre.getText(), correo.getText(),
                             password.getText(), direccion.getText(), telefono.getText());
-                    resultado[0] = existente;
                 } else if ("Administrador".equals(rol.getValue())) {
-                    resultado[0] = App.getOperacionController().registrarAdmin(nombre.getText(), user.getText(),
+                    App.getOperacionController().registrarAdmin(nombre.getText(), user.getText(),
                             password.getText(), correo.getText());
                 } else {
-                    resultado[0] = App.getOperacionController().registrarCliente(nombre.getText(), user.getText(),
+                    App.getOperacionController().registrarCliente(nombre.getText(), user.getText(),
                             password.getText(), correo.getText(), documento.getText(), direccion.getText(), telefono.getText());
                 }
-            });
-            if (error != null) {
-                ViewUtil.error(error);
+            } catch (MonederoException e) {
+                ViewUtil.error(e.getMessage());
                 ev.consume();
             }
         });
-        dialogo.showAndWait();
-        return Optional.ofNullable(resultado[0]);
+
+        Optional<ButtonType> respuesta = dialogo.showAndWait();
+        if (respuesta.isEmpty() || respuesta.get() != ButtonType.OK) return Optional.empty();
+
+        // Al dar OK el usuario ya quedó guardado, así que solo lo buscamos para devolverlo
+        if (existente != null) return Optional.of(existente);
+        return App.getBanco().buscarUsuario(user.getText().trim());
     }
 }
 

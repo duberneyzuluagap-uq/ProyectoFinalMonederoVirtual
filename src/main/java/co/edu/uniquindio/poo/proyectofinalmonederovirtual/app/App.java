@@ -26,6 +26,7 @@ public class App extends Application {
     private static AnalizadorGastosController analizadorController;
     private static TransaccionController transaccionController;
     private static OperacionController operacionController;
+    private static ProcesadorTransaccionesProgramadas procesadorProgramadas;
 
     @Override
     public void start(Stage primaryStage) {
@@ -44,8 +45,9 @@ public class App extends Application {
         alertaController = new AlertaController();
         analizadorController = new AnalizadorGastosController();
         transaccionController = new TransaccionController(banco);
+        procesadorProgramadas = new ProcesadorTransaccionesProgramadas(notificacion);
         operacionController = new OperacionController(banco, transaccionController, new MonederoController(banco),
-                alertaController, new DetectorAtipicasController(notificacion), notificacion);
+                alertaController, new DetectorAtipicasController(notificacion), notificacion, procesadorProgramadas);
         sembrarDatos();
     }
 
@@ -85,6 +87,7 @@ public class App extends Application {
     public static AnalizadorGastosController getAnalizadorController() { return analizadorController; }
     public static TransaccionController getTransaccionController() { return transaccionController; }
     public static OperacionController getOperacionController() { return operacionController; }
+    public static ProcesadorTransaccionesProgramadas getProcesadorProgramadas() { return procesadorProgramadas; }
     public static Stage getStage() { return stage; }
 
     public static Cliente clienteActual() {

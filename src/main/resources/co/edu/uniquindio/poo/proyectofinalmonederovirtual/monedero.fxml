@@ -13,12 +13,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<!--
-  Para conectar el controlador, agrega en BorderPane:
-  fx:controller="tu.paquete.MonederoController"
--->
-
-<BorderPane fx:id="rootPane" prefHeight="720.0" prefWidth="1150.0" styleClass="root-pane" stylesheets="@monedero.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane fx:id="rootPane" fx:controller="co.edu.uniquindio.poo.proyectofinalmonederovirtual.viewController.MonederoViewController" prefHeight="720.0" prefWidth="1150.0" styleClass="root-pane" stylesheets="@monedero.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1">
 
    <!-- ===================== BARRA LATERAL ===================== -->
    <left>
@@ -54,6 +49,7 @@
             <Button fx:id="btnEnviar" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-button" text="💸  Enviar dinero" />
             <Button fx:id="btnRecargar" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-button" text="➕  Recargar saldo" />
             <Button fx:id="btnHistorial" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-button" text="📜  Historial" />
+            <Button fx:id="btnProgramadas" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-button" text="⏰  Mis programadas" />
             <Button fx:id="btnTarjetas" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-button" text="💳  Mis tarjetas" />
             <Button fx:id="btnConfiguracion" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="nav-button" text="⚙  Configuración" />
 
@@ -194,6 +190,37 @@
                               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                            </columnResizePolicy>
                         </TableView>
+                     </children>
+                  </VBox>
+
+                  <!-- Transacciones programadas -->
+                  <VBox fx:id="cardProgramadas" spacing="12.0" styleClass="card" visible="false" managed="false">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" spacing="12.0">
+                           <children>
+                              <Label styleClass="card-title" text="⏰  Mis transacciones programadas" />
+                              <Region HBox.hgrow="ALWAYS" />
+                              <Button fx:id="btnNuevaProgramada" mnemonicParsing="false" styleClass="primary-button, small-button" text="➕ Programar" />
+                           </children>
+                        </HBox>
+                        <TableView fx:id="tblProgramadas" prefHeight="200.0">
+                           <columns>
+                              <TableColumn fx:id="colProgId" prefWidth="80.0" text="ID" />
+                              <TableColumn fx:id="colProgTipo" prefWidth="140.0" text="Tipo" />
+                              <TableColumn fx:id="colProgMonto" prefWidth="140.0" text="Monto" />
+                              <TableColumn fx:id="colProgFrecuencia" prefWidth="120.0" text="Frecuencia" />
+                              <TableColumn fx:id="colProgProxima" prefWidth="140.0" text="Pr�xima ejecuci�n" />
+                              <TableColumn fx:id="colProgMonedero" prefWidth="160.0" text="Monedero" />
+                           </columns>
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
+                        </TableView>
+                        <HBox spacing="10.0">
+                           <children>
+                              <Button fx:id="btnEliminarProgramada" mnemonicParsing="false" styleClass="danger-button, small-button" text="🗑 Eliminar" />
+                           </children>
+                        </HBox>
                      </children>
                   </VBox>
                </children>

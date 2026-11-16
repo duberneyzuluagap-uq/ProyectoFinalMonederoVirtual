@@ -34,12 +34,18 @@ public final class MonederosDialog {
         });
         tabla.getColumns().addAll(cCuenta, cTipo, cSaldo, cDetalle);
 
+        // "recargar" vuelve a pintar la tabla con los monederos actuales del cliente
         Runnable recargar = () -> { items.setAll(cliente.getListaMonederos()); tabla.refresh(); };
 
         Button btnAhorro = new Button("➕ Monedero de ahorro");
         btnAhorro.setOnAction(e -> pedir("Meta de ahorro", "Meta de ahorro ($):", "1000000").ifPresent(txt -> {
-            String err = ViewUtil.intentar(() -> op.crearMonederoAhorro(cliente, OperacionController.parseMonto(txt), 0.01));
-            if (err != null) ViewUtil.error(err); else recargar.run();
+            try {
+                double meta = OperacionController.parseMonto(txt);
+                op.crearMonederoAhorro(cliente, meta, 0.01);
+                recargar.run();
+            } catch (MonederoException ex) {
+                ViewUtil.error(ex.getMessage());
+            }
         }));
         Button btnGasto = new Button("➕ Gasto diario");
         btnGasto.setOnAction(e -> { op.crearMonederoGastoDiario(cliente); recargar.run(); });
@@ -48,9 +54,14 @@ public final class MonederosDialog {
             Monedero sel = tabla.getSelectionModel().getSelectedItem();
             if (sel == null) { ViewUtil.error("Selecciona un monedero."); return; }
             pedir("Retiro", "Monto a retirar (comisión 1%):", "").ifPresent(txt -> {
-                String[] ok = new String[1];
-                String err = ViewUtil.intentar(() -> ok[0] = op.retirar(cliente, sel, OperacionController.parseMonto(txt)));
-                if (err != null) ViewUtil.error(err); else { ViewUtil.info(ok[0]); recargar.run(); }
+                try {
+                    double monto = OperacionController.parseMonto(txt);
+                    String mensaje = op.retirar(cliente, sel, monto);
+                    ViewUtil.info(mensaje);
+                    recargar.run();
+                } catch (MonederoException ex) {
+                    ViewUtil.error(ex.getMessage());
+                }
             });
         });
         Button btnPrincipal = new Button("★ Usar como principal");
@@ -63,8 +74,12 @@ public final class MonederosDialog {
         Button btnEliminar = new Button("🗑 Eliminar");
         btnEliminar.setOnAction(e -> {
             Monedero sel = tabla.getSelectionModel().getSelectedItem();
-            String err = ViewUtil.intentar(() -> op.eliminarMonedero(cliente, sel));
-            if (err != null) ViewUtil.error(err); else recargar.run();
+            try {
+                op.eliminarMonedero(cliente, sel);
+                recargar.run();
+            } catch (MonederoException ex) {
+                ViewUtil.error(ex.getMessage());
+            }
         });
 
         Dialog<ButtonType> d = new Dialog<>();

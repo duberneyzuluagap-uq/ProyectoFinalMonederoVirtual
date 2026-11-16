@@ -132,13 +132,20 @@ public class BeneficiosViewController {
             lblProgresoNivel.setText("¡Alcanzaste el nivel máximo!");
         }
 
-        long canjes = op.listarCanjes(cliente).stream().filter(c -> !c.estado().equals("Rechazado")).count();
+        int canjes = 0;
+        for (Canje c : op.listarCanjes(cliente)) {
+            if (!c.estado().equals("Rechazado")) canjes++;
+        }
         lblCanjesRealizados.setText(String.valueOf(canjes));
+
         YearMonth mes = YearMonth.now();
-        int delMes = cliente.getListaMovimientosPuntos().stream()
-                .filter(m -> !m.isAnulado() && m.getPuntos() > 0 && YearMonth.from(m.getFecha()).equals(mes))
-                .mapToInt(MovimientoPuntos::getPuntos).sum();
-        lblPuntosMes.setText("+" + ViewUtil.numero(delMes));
+        int puntosDelMes = 0;
+        for (MovimientoPuntos m : cliente.getListaMovimientosPuntos()) {
+            boolean vigente = !m.isAnulado() && m.getPuntos() > 0;
+            boolean esDeEsteMes = YearMonth.from(m.getFecha()).equals(mes);
+            if (vigente && esDeEsteMes) puntosDelMes += m.getPuntos();
+        }
+        lblPuntosMes.setText("+" + ViewUtil.numero(puntosDelMes));
     }
 
     private void categoria(String nombre, Button boton) {
@@ -227,11 +234,14 @@ public class BeneficiosViewController {
     private void confirmarCanje() {
         if (canjePendiente == null) return;
         Beneficio b = canjePendiente;
-        String[] resultado = new String[1];
-        String error = ViewUtil.intentar(() -> resultado[0] = op.canjearBeneficio(cliente, b));
         cancelarCanje();
-        if (error != null) ViewUtil.mensaje(lblMensajeCanje, "✖ " + error, false);
-        else ViewUtil.mensaje(lblMensajeCanje, "✔ " + resultado[0], true);
+
+        try {
+            String mensaje = op.canjearBeneficio(cliente, b);
+            ViewUtil.mensaje(lblMensajeCanje, "✔ " + mensaje, true);
+        } catch (MonederoException e) {
+            ViewUtil.mensaje(lblMensajeCanje, "✖ " + e.getMessage(), false);
+        }
         refrescarTodo();
     }
 

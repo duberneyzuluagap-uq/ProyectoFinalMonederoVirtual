@@ -5,7 +5,6 @@ import co.edu.uniquindio.poo.proyectofinalmonederovirtual.model.Admin;
 import co.edu.uniquindio.poo.proyectofinalmonederovirtual.model.Usuario;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -23,7 +22,6 @@ public class InicioSesionViewController {
     @FXML private Button btnIniciarSesion;
     @FXML private Button btnMostrarContrasena;
     @FXML private VBox cardLogin;
-    @FXML private Hyperlink hlRegistrarse;
     @FXML private Label lblDescripcion;
     @FXML private Label lblLogo;
     @FXML private Label lblMensajeError;
@@ -44,7 +42,6 @@ public class InicioSesionViewController {
 
         btnMostrarContrasena.setOnAction(e -> alternarContrasena());
         btnIniciarSesion.setOnAction(e -> iniciarSesion());
-        hlRegistrarse.setOnAction(e -> registrarse());
         txtUsuario.setOnAction(e -> pfContrasena.requestFocus());
     }
 
@@ -78,13 +75,5 @@ public class InicioSesionViewController {
         Usuario actual = App.getUsuarioController().getUsuarioActual();
         if (actual instanceof Admin) App.irAdmin();
         else App.irMonedero("inicio");
-    }
-
-    private void registrarse() {
-        FormularioUsuarioDialog.mostrar(null, false).ifPresent(u -> {
-            txtUsuario.setText(u.getUser());
-            pfContrasena.clear();
-            ViewUtil.info("¡Cuenta creada! Ya puedes iniciar sesión con el usuario '" + u.getUser() + "'.");
-        });
     }
 }

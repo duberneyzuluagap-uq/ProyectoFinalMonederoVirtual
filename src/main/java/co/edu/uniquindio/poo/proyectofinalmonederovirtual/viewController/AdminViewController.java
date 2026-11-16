@@ -11,7 +11,6 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -27,14 +26,16 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import java.util.TreeMap;
 
 public class AdminViewController {
 
     @FXML private BorderPane rootAdmin;
     @FXML private Label lblInicialesAdmin, lblNombreAdmin, lblCorreoAdmin, lblTituloAdmin, lblSubtituloAdmin, lblEstadoSistema;
     @FXML private Button btnPanelGeneral, btnUsuarios, btnTransacciones, btnBeneficiosAdmin, btnCatalogoBeneficios,
-            btnCanjesPendientes, btnReportes, btnConfiguracionAdmin, btnCerrarSesionAdmin, btnNotificacionesAdmin;
+            btnCanjesPendientes, btnReportes, btnConfiguracionAdmin, btnCerrarSesionAdmin, btnNotificacionesAdmin,
+            btnProcesarProgramadas;
     @FXML private VBox subMenuBeneficiosAdmin;
     @FXML private Label lblTotalUsuarios, lblSaldoCirculacion, lblTransaccionesHoy, lblCanjesPendientes, lblMensajeAdmin;
 
@@ -153,28 +154,16 @@ public class AdminViewController {
         btnPanelGeneral.setOnAction(e -> mostrarSeccion("general"));
         btnUsuarios.setOnAction(e -> mostrarSeccion("usuarios"));
         btnTransacciones.setOnAction(e -> mostrarSeccion("transacciones"));
-        btnBeneficiosAdmin.setOnAction(e -> {
-            ViewUtil.mostrar(subMenuBeneficiosAdmin, !subMenuBeneficiosAdmin.isVisible() || !cardBeneficiosAdmin.isVisible());
-            mostrarSeccion("catalogo");
-        });
+        btnBeneficiosAdmin.setOnAction(e -> abrirCatalogo());
         btnCatalogoBeneficios.setOnAction(e -> mostrarSeccion("catalogo"));
         btnCanjesPendientes.setOnAction(e -> mostrarSeccion("canjes"));
         btnReportes.setOnAction(e -> mostrarReportes());
         btnConfiguracionAdmin.setOnAction(e -> abrirConfiguracion());
         btnNotificacionesAdmin.setOnAction(e -> mostrarNotificaciones());
+        btnProcesarProgramadas.setOnAction(e -> procesarProgramadas());
         btnCerrarSesionAdmin.setOnAction(e -> { App.getUsuarioController().cerrarSesion(); App.irLogin(); });
-        btnNuevoUsuario.setOnAction(e -> FormularioUsuarioDialog.mostrar(null, true).ifPresent(u -> {
-            refrescar();
-            ViewUtil.mensaje(lblMensajeAdmin, "✔ Usuario '" + u.getUser() + "' creado.", true);
-        }));
-        btnEditarUsuario.setOnAction(e -> {
-            Usuario sel = tblUsuarios.getSelectionModel().getSelectedItem();
-            if (sel == null) { aviso("Selecciona un usuario."); return; }
-            FormularioUsuarioDialog.mostrar(sel, false).ifPresent(u -> {
-                refrescar();
-                ViewUtil.mensaje(lblMensajeAdmin, "✔ Usuario actualizado.", true);
-            });
-        });
+        btnNuevoUsuario.setOnAction(e -> nuevoUsuario());
+        btnEditarUsuario.setOnAction(e -> editarUsuario());
         btnVerDetalleUsuario.setOnAction(e -> verDetalleUsuario());
         btnBloquearUsuario.setOnAction(e -> bloquearUsuario());
         btnEliminarUsuario.setOnAction(e -> eliminarUsuario());
@@ -182,37 +171,90 @@ public class AdminViewController {
         btnReversarTransaccion.setOnAction(e -> reversarTransaccion());
         btnExportarTransacciones.setOnAction(e -> exportarTransacciones());
         btnNuevoBeneficio.setOnAction(e -> { if (dialogoBeneficio(null)) refrescar(); });
-        btnEditarBeneficio.setOnAction(e -> {
-            Beneficio sel = tblBeneficiosAdmin.getSelectionModel().getSelectedItem();
-            if (sel == null) { aviso("Selecciona un beneficio."); return; }
-            if (dialogoBeneficio(sel)) refrescar();
-        });
-        btnActivarBeneficio.setOnAction(e -> {
-            Beneficio sel = tblBeneficiosAdmin.getSelectionModel().getSelectedItem();
-            if (sel == null) { aviso("Selecciona un beneficio."); return; }
-            boolean activo = op.cambiarEstadoBeneficio(sel.getIdBeneficio());
+        btnEditarBeneficio.setOnAction(e -> editarBeneficio());
+        btnActivarBeneficio.setOnAction(e -> activarBeneficio());
+        btnEliminarBeneficio.setOnAction(e -> eliminarBeneficio());
+        btnAprobarCanje.setOnAction(e -> aprobarCanje());
+        btnRechazarCanje.setOnAction(e -> rechazarCanje());
+    }
+
+    // ---------------------------------------------------------------
+    //  Acciones de los botones (una por método, para poder señalarlas)
+    // ---------------------------------------------------------------
+
+    /** Abre y cierra el submenú del catálogo de beneficios. */
+    private void abrirCatalogo() {
+        ViewUtil.mostrar(subMenuBeneficiosAdmin, !subMenuBeneficiosAdmin.isVisible() || !cardBeneficiosAdmin.isVisible());
+        mostrarSeccion("catalogo");
+    }
+
+    /** Abre el formulario para crear un usuario (cliente o administrador). */
+    private void nuevoUsuario() {
+        FormularioUsuarioDialog.mostrar(null, true).ifPresent(u -> {
             refrescar();
-            ViewUtil.mensaje(lblMensajeAdmin, "✔ Beneficio " + (activo ? "activado." : "desactivado."), true);
+            ViewUtil.mensaje(lblMensajeAdmin, "✔ Usuario '" + u.getUser() + "' creado.", true);
         });
-        btnEliminarBeneficio.setOnAction(e -> {
-            Beneficio sel = tblBeneficiosAdmin.getSelectionModel().getSelectedItem();
-            if (sel == null) { aviso("Selecciona un beneficio."); return; }
-            if (!ViewUtil.confirmar("¿Eliminar el beneficio «" + sel.getNombre() + "»?")) return;
-            String msg = App.getBeneficioController().eliminarBeneficio(sel.getIdBeneficio());
+    }
+
+    /** Abre el formulario para editar el usuario seleccionado en la tabla. */
+    private void editarUsuario() {
+        Usuario sel = tblUsuarios.getSelectionModel().getSelectedItem();
+        if (sel == null) { aviso("Selecciona un usuario."); return; }
+        FormularioUsuarioDialog.mostrar(sel, false).ifPresent(u -> {
             refrescar();
-            ViewUtil.mensaje(lblMensajeAdmin, "✔ " + msg, true);
+            ViewUtil.mensaje(lblMensajeAdmin, "✔ Usuario actualizado.", true);
         });
-        btnAprobarCanje.setOnAction(e -> {
-            Canje sel = tblCanjesAdmin.getSelectionModel().getSelectedItem();
-            String err = ViewUtil.intentar(() -> op.aprobarCanje(sel));
-            resultado(err, "Canje aprobado.");
-        });
-        btnRechazarCanje.setOnAction(e -> {
-            Canje sel = tblCanjesAdmin.getSelectionModel().getSelectedItem();
-            if (sel != null && !ViewUtil.confirmar("¿Rechazar el canje? Se devolverán los puntos al cliente.")) return;
-            String err = ViewUtil.intentar(() -> op.rechazarCanje(sel));
-            resultado(err, "Canje rechazado y puntos devueltos.");
-        });
+    }
+
+    /** Abre el formulario para editar el beneficio seleccionado. */
+    private void editarBeneficio() {
+        Beneficio sel = tblBeneficiosAdmin.getSelectionModel().getSelectedItem();
+        if (sel == null) { aviso("Selecciona un beneficio."); return; }
+        if (dialogoBeneficio(sel)) refrescar();
+    }
+
+    /** Activa o desactiva el beneficio seleccionado. */
+    private void activarBeneficio() {
+        Beneficio sel = tblBeneficiosAdmin.getSelectionModel().getSelectedItem();
+        if (sel == null) { aviso("Selecciona un beneficio."); return; }
+        boolean activo = op.cambiarEstadoBeneficio(sel.getIdBeneficio());
+        refrescar();
+        ViewUtil.mensaje(lblMensajeAdmin, "✔ Beneficio " + (activo ? "activado." : "desactivado."), true);
+    }
+
+    /** Elimina el beneficio seleccionado (después de pedir confirmación). */
+    private void eliminarBeneficio() {
+        Beneficio sel = tblBeneficiosAdmin.getSelectionModel().getSelectedItem();
+        if (sel == null) { aviso("Selecciona un beneficio."); return; }
+        if (!ViewUtil.confirmar("¿Eliminar el beneficio «" + sel.getNombre() + "»?")) return;
+        String msg = App.getBeneficioController().eliminarBeneficio(sel.getIdBeneficio());
+        refrescar();
+        ViewUtil.mensaje(lblMensajeAdmin, "✔ " + msg, true);
+    }
+
+    /** Aprueba el canje seleccionado. */
+    private void aprobarCanje() {
+        Canje sel = tblCanjesAdmin.getSelectionModel().getSelectedItem();
+        try {
+            op.aprobarCanje(sel);
+        } catch (MonederoException e) {
+            aviso(e.getMessage());
+            return;
+        }
+        exito("Canje aprobado.");
+    }
+
+    /** Rechaza el canje seleccionado y le devuelve los puntos al cliente. */
+    private void rechazarCanje() {
+        Canje sel = tblCanjesAdmin.getSelectionModel().getSelectedItem();
+        if (sel != null && !ViewUtil.confirmar("¿Rechazar el canje? Se devolverán los puntos al cliente.")) return;
+        try {
+            op.rechazarCanje(sel);
+        } catch (MonederoException e) {
+            aviso(e.getMessage());
+            return;
+        }
+        exito("Canje rechazado y puntos devueltos.");
     }
     private void refrescar() {
         baseUsuarios.setAll(App.getUsuarioController().getListaUsuarios());
@@ -304,10 +346,10 @@ public class AdminViewController {
 
     private void aviso(String texto) { ViewUtil.mensaje(lblMensajeAdmin, "✖ " + texto, false); }
 
-    private void resultado(String error, String exito) {
-        if (error != null) { aviso(error); return; }
+    /** Muestra el mensaje de éxito en la barra de mensajes y vuelve a pintar las tablas. */
+    private void exito(String mensaje) {
         refrescar();
-        ViewUtil.mensaje(lblMensajeAdmin, "✔ " + exito, true);
+        ViewUtil.mensaje(lblMensajeAdmin, "✔ " + mensaje, true);
     }
 
     private void bloquearUsuario() {
@@ -325,9 +367,14 @@ public class AdminViewController {
         if (sel == null) { aviso("Selecciona un usuario."); return; }
         if (sel == admin) { aviso("No puedes eliminar tu propia cuenta."); return; }
         if (!ViewUtil.confirmar("¿Eliminar a " + sel.getNombre() + " junto con sus monederos y transacciones?")) return;
-        String[] msg = new String[1];
-        String err = ViewUtil.intentar(() -> msg[0] = op.eliminarUsuario(sel));
-        resultado(err, msg[0]);
+        String msg;
+        try {
+            msg = op.eliminarUsuario(sel);
+        } catch (MonederoException e) {
+            aviso(e.getMessage());
+            return;
+        }
+        exito(msg);
     }
 
     private void verDetalleUsuario() {
@@ -379,9 +426,14 @@ public class AdminViewController {
         if (t == null) { aviso("Selecciona una transacción."); return; }
         if (!(t instanceof Transferencia tr)) { aviso("Solo se pueden reversar transferencias."); return; }
         if (!ViewUtil.confirmar("¿Reversar la transferencia " + tr.getIdTransaccion() + "? Se recalcularán los puntos del cliente.")) return;
-        String[] msg = new String[1];
-        String err = ViewUtil.intentar(() -> msg[0] = op.revertirTransferencia(tr));
-        resultado(err, msg[0]);
+        String msg;
+        try {
+            msg = op.revertirTransferencia(tr);
+        } catch (MonederoException e) {
+            aviso(e.getMessage());
+            return;
+        }
+        exito(msg);
     }
 
     private void exportarTransacciones() {
@@ -422,9 +474,10 @@ public class AdminViewController {
         g.addRow(2, new Label("Puntos requeridos"), puntos);
         d.getDialogPane().setContent(g);
 
-        boolean[] guardado = new boolean[1];
+        // Mientras los campos estén mal se muestra el error y ev.consume()
+        // mantiene el diálogo abierto para que el usuario pueda corregirlo.
         d.getDialogPane().lookupButton(ButtonType.OK).addEventFilter(ActionEvent.ACTION, ev -> {
-            String err = ViewUtil.intentar(() -> {
+            try {
                 String n = nombre.getText() == null ? "" : nombre.getText().trim();
                 if (n.isEmpty()) throw new DatosInvalidosException("El nombre es obligatorio.");
                 int pts;
@@ -442,29 +495,60 @@ public class AdminViewController {
                     existente.setDescripcion(desc);
                     existente.setPuntosRequeridos(pts);
                 }
-                guardado[0] = true;
-            });
-            if (err != null) { ViewUtil.error(err); ev.consume(); }
+            } catch (MonederoException e) {
+                ViewUtil.error(e.getMessage());
+                ev.consume();
+            }
         });
-        d.showAndWait();
-        if (guardado[0]) ViewUtil.mensaje(lblMensajeAdmin, "✔ Beneficio guardado.", true);
-        return guardado[0];
+
+        // Si se llegó a cerrar con Aceptar, el beneficio quedó guardado
+        Optional<ButtonType> respuesta = d.showAndWait();
+        boolean guardado = respuesta.isPresent() && respuesta.get() == ButtonType.OK;
+        if (guardado) ViewUtil.mensaje(lblMensajeAdmin, "✔ Beneficio guardado.", true);
+        return guardado;
     }
 
     private void mostrarReportes() {
-        List<Cliente> clientes = baseUsuarios.stream().filter(u -> u instanceof Cliente).map(u -> (Cliente) u).collect(Collectors.toList());
-        StringBuilder sb = new StringBuilder("REPORTE GENERAL\n\nClientes: ").append(clientes.size()).append("\nPor rango:\n");
-        clientes.stream().collect(Collectors.groupingBy(c -> c.getRango().toString(), Collectors.counting()))
-                .forEach((k, v) -> sb.append("  • ").append(k).append(": ").append(v).append("\n"));
-        sb.append("\nSaldo en circulación: ").append(ViewUtil.dinero(App.getBanco().getListaMonederos().stream().mapToDouble(Monedero::getSaldo).sum()));
+        List<Cliente> clientes = new ArrayList<>();
+        for (Usuario u : baseUsuarios) {
+            if (u instanceof Cliente c) clientes.add(c);
+        }
+
+        StringBuilder sb = new StringBuilder("REPORTE GENERAL\n\nClientes: ")
+                .append(clientes.size()).append("\nPor rango:\n");
+        for (RangoCliente rango : RangoCliente.values()) {
+            int cantidad = 0;
+            for (Cliente c : clientes) {
+                if (c.getRango() == rango) cantidad++;
+            }
+            sb.append("  • ").append(rango).append(": ").append(cantidad).append("\n");
+        }
+
+        double circulacion = App.getBanco().getListaMonederos().stream().mapToDouble(Monedero::getSaldo).sum();
+        sb.append("\nSaldo en circulación: ").append(ViewUtil.dinero(circulacion));
+
         sb.append("\n\nTransacciones por tipo:\n");
-        baseTrx.stream().collect(Collectors.groupingBy(this::tipoDe, Collectors.summingDouble(Transaccion::getMonto)))
-                .forEach((k, v) -> sb.append("  • ").append(k).append(": ").append(ViewUtil.dinero(v)).append("\n"));
+        Map<String, Double> montoPorTipo = new TreeMap<>();
+        for (Transaccion t : baseTrx) {
+            String tipo = tipoDe(t);
+            montoPorTipo.put(tipo, montoPorTipo.getOrDefault(tipo, 0.0) + t.getMonto());
+        }
+        for (Map.Entry<String, Double> e : montoPorTipo.entrySet()) {
+            sb.append("  • ").append(e.getKey()).append(": ").append(ViewUtil.dinero(e.getValue())).append("\n");
+        }
+
         long sospechosas = baseTrx.stream().filter(Transaccion::isSospechosa).count();
         sb.append("\nTransacciones sospechosas: ").append(sospechosas);
+
         sb.append("\n\nCanjes por estado:\n");
-        baseCanjes.stream().collect(Collectors.groupingBy(Canje::estado, Collectors.counting()))
-                .forEach((k, v) -> sb.append("  • ").append(k).append(": ").append(v).append("\n"));
+        Map<String, Integer> canjesPorEstado = new TreeMap<>();
+        for (Canje c : baseCanjes) {
+            canjesPorEstado.put(c.estado(), canjesPorEstado.getOrDefault(c.estado(), 0) + 1);
+        }
+        for (Map.Entry<String, Integer> e : canjesPorEstado.entrySet()) {
+            sb.append("  • ").append(e.getKey()).append(": ").append(e.getValue()).append("\n");
+        }
+
         mostrarTexto("Reportes", sb.toString());
     }
 
@@ -483,13 +567,15 @@ public class AdminViewController {
         g.addRow(1, new Label("NIT"), nit);
         d.getDialogPane().setContent(g);
         d.getDialogPane().lookupButton(ButtonType.OK).addEventFilter(ActionEvent.ACTION, ev -> {
-            String err = ViewUtil.intentar(() -> {
+            try {
                 if (nombre.getText() == null || nombre.getText().isBlank()) throw new DatosInvalidosException("El nombre del banco es obligatorio.");
                 if (nit.getText() == null || nit.getText().isBlank()) throw new DatosInvalidosException("El NIT es obligatorio.");
                 banco.setNombre(nombre.getText().trim());
                 banco.setNit(nit.getText().trim());
-            });
-            if (err != null) { ViewUtil.error(err); ev.consume(); }
+            } catch (MonederoException e) {
+                ViewUtil.error(e.getMessage());
+                ev.consume();
+            }
         });
         d.showAndWait();
     }
@@ -500,13 +586,25 @@ public class AdminViewController {
         sb.append("Canjes pendientes de aprobación: ").append(pendientes).append("\n\nAlertas de transacciones atípicas:\n");
         List<String> atipicas = new ArrayList<>();
         for (Usuario u : baseUsuarios) {
-            if (u instanceof Cliente c) {
-                c.getListaAlertas().stream().filter(a -> a.getTipo() == TipoAlerta.TRANSACCION_ATIPICA)
-                        .forEach(a -> atipicas.add("  • " + c.getNombre() + " — " + a.getMensaje()));
+            if (!(u instanceof Cliente c)) continue;
+            for (Alerta a : c.getListaAlertas()) {
+                if (a.getTipo() == TipoAlerta.TRANSACCION_ATIPICA) {
+                    atipicas.add("  • " + c.getNombre() + " — " + a.getMensaje());
+                }
             }
         }
         sb.append(atipicas.isEmpty() ? "  (ninguna)" : String.join("\n", atipicas));
         mostrarTexto("Notificaciones", sb.toString());
+    }
+
+    /** Ejecuta las transacciones programadas pendientes de todos los clientes (hoy). */
+    private void procesarProgramadas() {
+        try {
+            op.procesarTodasProgramadas();
+            exito("Transacciones programadas procesadas.");
+        } catch (MonederoException e) {
+            aviso(e.getMessage());
+        }
     }
 
     private void mostrarTexto(String titulo, String texto) {

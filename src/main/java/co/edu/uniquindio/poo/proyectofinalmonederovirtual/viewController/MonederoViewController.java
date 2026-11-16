@@ -8,12 +8,16 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.util.StringConverter;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -31,7 +35,7 @@ public class MonederoViewController {
     @FXML private BorderPane rootPane;
     @FXML private VBox sidebar;
     @FXML private Label lblLogo, lblIniciales, lblUsuario, lblCorreo;
-    @FXML private Button btnInicio, btnEnviar, btnRecargar, btnHistorial, btnTarjetas, btnConfiguracion, btnCerrarSesion;
+    @FXML private Button btnInicio, btnEnviar, btnRecargar, btnHistorial, btnProgramadas, btnTarjetas, btnConfiguracion, btnCerrarSesion;
     @FXML private Label lblBienvenida, lblFecha, lblEstadoCuenta;
     @FXML private Button btnNotificaciones;
     @FXML private Label lblSaldo, lblNumeroCuenta, lblIngresos, lblGastos;
@@ -42,6 +46,11 @@ public class MonederoViewController {
     @FXML private ComboBox<String> cmbFiltro;
     @FXML private TableView<Movimiento> tblMovimientos;
     @FXML private TableColumn<Movimiento, String> colFecha, colDescripcion, colTipo, colMonto;
+
+    @FXML private VBox cardProgramadas;
+    @FXML private TableView<TransaccionProgramada> tblProgramadas;
+    @FXML private TableColumn<TransaccionProgramada, String> colProgId, colProgTipo, colProgMonto, colProgFrecuencia, colProgProxima, colProgMonedero;
+    @FXML private Button btnNuevaProgramada, btnEliminarProgramada;
 
     private Cliente cliente;
     private boolean saldoVisible = true;
@@ -65,6 +74,7 @@ public class MonederoViewController {
         btnEnviar.setOnAction(e -> mostrarSeccion("enviar"));
         btnRecargar.setOnAction(e -> mostrarSeccion("recargar"));
         btnHistorial.setOnAction(e -> mostrarSeccion("historial"));
+        btnProgramadas.setOnAction(e -> mostrarSeccion("programadas"));
         btnBeneficiosNav.setOnAction(e -> App.irBeneficios("catalogo"));
         btnTarjetas.setOnAction(e -> abrirMonederos());
         btnConfiguracion.setOnAction(e -> abrirConfiguracion());
@@ -78,6 +88,8 @@ public class MonederoViewController {
         btnMonto20.setOnAction(e -> txtMontoRecarga.setText("20000"));
         btnMonto50.setOnAction(e -> txtMontoRecarga.setText("50000"));
         btnMonto100.setOnAction(e -> txtMontoRecarga.setText("100000"));
+        btnNuevaProgramada.setOnAction(e -> abrirDialogoNuevaProgramada());
+        btnEliminarProgramada.setOnAction(e -> eliminarProgramada());
         lblMensajeEnvio.setText("");
         lblMensajeRecarga.setText("");
         cmbFiltro.setItems(FXCollections.observableArrayList(
@@ -106,6 +118,15 @@ public class MonederoViewController {
         orden = orden.thenComparing(Movimiento::id).reversed();
         tblMovimientos.setItems(new SortedList<>(filtrados, orden));
         tblMovimientos.setPlaceholder(new Label("Aún no tienes movimientos"));
+
+        // Tabla de transacciones programadas
+        ViewUtil.columna(colProgId, TransaccionProgramada::getIdTransaccion);
+        ViewUtil.columna(colProgTipo, p -> p.getTransaccion().getClass().getSimpleName());
+        ViewUtil.columna(colProgMonto, p -> ViewUtil.dinero(p.getMonto()));
+        ViewUtil.columna(colProgFrecuencia, p -> p.getFrecuencia().toString());
+        ViewUtil.columna(colProgProxima, p -> ViewUtil.fecha(p.getFechaEjecucion()));
+        ViewUtil.columna(colProgMonedero, p -> p.getMonedero().getNumeroCuenta());
+        tblProgramadas.setPlaceholder(new Label("No tienes transacciones programadas"));
     }
 
     private void cargarPerfil() {
@@ -137,19 +158,157 @@ public class MonederoViewController {
                 : "N.º de cuenta  " + p.getNumeroCuenta() + (n > 1 ? "  (+" + (n - 1) + " más)" : ""));
 
         base.setAll(construirMovimientos());
-        YearMonth mes = YearMonth.now();
-        double ingresos = base.stream().filter(m -> m.estado() != EstadoTransaccion.CANCELADA && m.ingreso()
-                && YearMonth.from(m.fecha()).equals(mes)).mapToDouble(Movimiento::monto).sum();
-        double gastos = base.stream().filter(m -> m.estado() != EstadoTransaccion.CANCELADA && !m.ingreso()
-                && YearMonth.from(m.fecha()).equals(mes)).mapToDouble(Movimiento::monto).sum();
-        lblIngresos.setText(ViewUtil.dinero(ingresos));
-        lblGastos.setText(ViewUtil.dinero(gastos));
+        lblIngresos.setText(ViewUtil.dinero(sumaDelMes(base, true)));
+        lblGastos.setText(ViewUtil.dinero(sumaDelMes(base, false)));
 
         boolean saldoBajo = cliente.getListaMonederos().stream().anyMatch(m -> m.getSaldo() < OperacionController.SALDO_BAJO);
         lblEstadoCuenta.setText(saldoBajo ? "● Saldo bajo" : "● Cuenta activa");
         int alertas = App.getAlertaController().getAlertasCliente(cliente).size();
         btnNotificaciones.setText(alertas == 0 ? "🔔" : "🔔 " + alertas);
         aplicarFiltro();
+    }
+
+    /** Carga las transacciones programadas del cliente en la tabla. */
+    private void cargarProgramadas() {
+        ObservableList<TransaccionProgramada> items = FXCollections.observableArrayList(cliente.getListaTransaccionesProgramadas());
+        tblProgramadas.setItems(items);
+    }
+
+    /** Abre un diálogo para crear una nueva transacción programada. */
+    private void abrirDialogoNuevaProgramada() {
+        if (cliente.getListaMonederos().isEmpty()) {
+            ViewUtil.advertencia("Primero crea al menos un monedero.");
+            return;
+        }
+
+        Dialog<ButtonType> d = new Dialog<>();
+        d.setTitle("Nueva transacción programada");
+        d.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        ComboBox<Monedero> cmbMonedero = new ComboBox<>(FXCollections.observableArrayList(cliente.getListaMonederos()));
+        cmbMonedero.setPromptText("Selecciona monedero");
+        cmbMonedero.setConverter(new javafx.util.StringConverter<Monedero>() {
+            @Override public String toString(Monedero m) { return m == null ? "" : m.getNumeroCuenta() + " (" + (m instanceof MonederoAhorro ? "Ahorro" : "Gasto diario") + ")"; }
+            @Override public Monedero fromString(String s) { return null; }
+        });
+
+        ComboBox<String> cmbTipo = new ComboBox<>(FXCollections.observableArrayList("Depósito", "Retiro", "Transferencia"));
+        cmbTipo.setPromptText("Tipo de transacción");
+        cmbTipo.setValue("Depósito");
+
+        TextField txtMonto = new TextField();
+        txtMonto.setPromptText("Monto (ej: 50000)");
+
+        TextField txtConcepto = new TextField();
+        txtConcepto.setPromptText("Concepto (opcional)");
+
+        ComboBox<Frecuencia> cmbFrecuencia = new ComboBox<>(FXCollections.observableArrayList(Frecuencia.values()));
+        cmbFrecuencia.setPromptText("Frecuencia");
+        cmbFrecuencia.setValue(Frecuencia.MENSUAL);
+
+        DatePicker dpFecha = new DatePicker(LocalDate.now().plusDays(1));
+        dpFecha.setPromptText("Fecha de inicio");
+
+        ComboBox<Monedero> cmbDestino = new ComboBox<>();
+        cmbDestino.setPromptText("Monedero destino (solo transferencia)");
+        cmbDestino.setDisable(true);
+        cmbDestino.setConverter(new javafx.util.StringConverter<Monedero>() {
+            @Override public String toString(Monedero m) { return m == null ? "" : m.getNumeroCuenta() + " - " + op.nombreTitular(m); }
+            @Override public Monedero fromString(String s) { return null; }
+        });
+
+        // Actualizar monederos destino según el monedero origen seleccionado
+        cmbMonedero.valueProperty().addListener((obs, old, nuevo) -> {
+            if (nuevo != null) {
+                cmbDestino.setItems(FXCollections.observableArrayList(
+                        cliente.getListaMonederos().stream().filter(m -> m != nuevo).toList()));
+            }
+        });
+
+        // Habilitar/deshabilitar campo destino según el tipo
+        cmbTipo.valueProperty().addListener((obs, old, nuevo) -> {
+            boolean esTransferencia = "Transferencia".equals(nuevo);
+            cmbDestino.setDisable(!esTransferencia);
+            txtConcepto.setDisable(!esTransferencia);
+        });
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(8);
+        grid.setPadding(new Insets(16));
+        grid.addRow(0, new Label("Monedero"), cmbMonedero);
+        grid.addRow(1, new Label("Tipo"), cmbTipo);
+        grid.addRow(2, new Label("Monto"), txtMonto);
+        grid.addRow(3, new Label("Frecuencia"), cmbFrecuencia);
+        grid.addRow(4, new Label("Fecha inicio"), dpFecha);
+        grid.addRow(5, new Label("Destino"), cmbDestino);
+        grid.addRow(6, new Label("Concepto"), txtConcepto);
+        d.getDialogPane().setContent(grid);
+
+        d.getDialogPane().lookupButton(ButtonType.OK).addEventFilter(ActionEvent.ACTION, ev -> {
+            try {
+                Monedero m = cmbMonedero.getValue();
+                if (m == null) throw new DatosInvalidosException("Selecciona un monedero.");
+                String tipo = cmbTipo.getValue();
+                if (tipo == null) throw new DatosInvalidosException("Selecciona un tipo.");
+                double monto = OperacionController.parseMonto(txtMonto.getText());
+                Frecuencia freq = cmbFrecuencia.getValue();
+                if (freq == null) throw new DatosInvalidosException("Selecciona una frecuencia.");
+                LocalDate fecha = dpFecha.getValue();
+                if (fecha == null) throw new DatosInvalidosException("Selecciona una fecha de inicio.");
+                if (fecha.isBefore(LocalDate.now())) throw new DatosInvalidosException("La fecha no puede ser anterior a hoy.");
+
+                String msg;
+                if ("Depósito".equals(tipo)) {
+                    msg = op.programarDeposito(cliente, m, monto, fecha, freq);
+                } else if ("Retiro".equals(tipo)) {
+                    msg = op.programarRetiro(cliente, m, monto, fecha, freq);
+                } else { // Transferencia
+                    Monedero destino = cmbDestino.getValue();
+                    if (destino == null) throw new DatosInvalidosException("Selecciona un monedero destino.");
+                    msg = op.programarTransferencia(cliente, m, destino, monto, txtConcepto.getText(), fecha, freq);
+                }
+                ViewUtil.info(msg);
+                cargarProgramadas();
+            } catch (MonederoException ex) {
+                ViewUtil.error(ex.getMessage());
+                ev.consume();
+            }
+        });
+
+        d.showAndWait();
+    }
+
+    /** Elimina la transacción programada seleccionada. */
+    private void eliminarProgramada() {
+        TransaccionProgramada sel = tblProgramadas.getSelectionModel().getSelectedItem();
+        if (sel == null) { ViewUtil.advertencia("Selecciona una transacción programada."); return; }
+        if (!ViewUtil.confirmar("¿Eliminar la transacción programada " + sel.getIdTransaccion() + "?")) return;
+        try {
+            String msg = op.eliminarTransaccionProgramada(cliente, sel.getIdTransaccion());
+            ViewUtil.info(msg);
+            cargarProgramadas();
+        } catch (MonederoException e) {
+            ViewUtil.error(e.getMessage());
+        }
+    }
+
+    /**
+     * Suma el monto de los movimientos de este mes que no estén cancelados.
+     *
+     * @param esIngreso true para sumar solo ingresos, false para sumar solo gastos
+     */
+    private double sumaDelMes(List<Movimiento> movimientos, boolean esIngreso) {
+        YearMonth mes = YearMonth.now();
+        double total = 0.0;
+        for (Movimiento m : movimientos) {
+            boolean cancelado = m.estado() == EstadoTransaccion.CANCELADA;
+            boolean esDelMes = YearMonth.from(m.fecha()).equals(mes);
+            if (!cancelado && m.ingreso() == esIngreso && esDelMes) {
+                total += m.monto();
+            }
+        }
+        return total;
     }
 
     private List<Movimiento> construirMovimientos() {
@@ -186,56 +345,65 @@ public class MonederoViewController {
     }
 
     private void aplicarFiltro() {
-        String q = txtBuscar.getText() == null ? "" : txtBuscar.getText().trim().toLowerCase();
-        String f = cmbFiltro.getValue() == null ? "Todos" : cmbFiltro.getValue();
-        filtrados.setPredicate(m -> {
-            boolean texto = q.isEmpty() || m.descripcion().toLowerCase().contains(q)
-                    || m.tipo().toLowerCase().contains(q) || m.id().toLowerCase().contains(q);
-            boolean categoria = switch (f) {
-                case "Ingresos" -> m.ingreso();
-                case "Gastos" -> !m.ingreso();
-                case "Depósitos" -> m.categoria().equals("DEP");
-                case "Retiros" -> m.categoria().equals("RET");
-                case "Transferencias" -> m.categoria().equals("TRF");
-                case "Sospechosas" -> m.sospechosa();
-                default -> true;
-            };
-            return texto && categoria;
-        });
+        String texto = txtBuscar.getText() == null ? "" : txtBuscar.getText().trim().toLowerCase();
+        String categoria = cmbFiltro.getValue() == null ? "Todos" : cmbFiltro.getValue();
+        filtrados.setPredicate(m -> coincideTexto(m, texto) && coincideCategoria(m, categoria));
+    }
+
+    /** Un movimiento coincide con el texto si aparece en la descripción, el tipo o el id. */
+    private boolean coincideTexto(Movimiento m, String texto) {
+        if (texto.isEmpty()) return true;
+        String buscado = texto.toLowerCase();
+        return m.descripcion().toLowerCase().contains(buscado)
+                || m.tipo().toLowerCase().contains(buscado)
+                || m.id().toLowerCase().contains(buscado);
+    }
+
+    /** Devuelve true si el movimiento pertenece a la categoría seleccionada en el filtro. */
+    private boolean coincideCategoria(Movimiento m, String categoria) {
+        switch (categoria) {
+            case "Ingresos":       return m.ingreso();
+            case "Gastos":         return !m.ingreso();
+            case "Depósitos":      return "DEP".equals(m.categoria());
+            case "Retiros":        return "RET".equals(m.categoria());
+            case "Transferencias": return "TRF".equals(m.categoria());
+            case "Sospechosas":    return m.sospechosa();
+            default:               return true;
+        }
     }
 
     private void enviarDinero() {
-        String[] resultado = new String[1];
-        String error = ViewUtil.intentar(() -> {
+        String mensaje;
+        try {
             Monedero origen = principal();
             Monedero destino = op.buscarMonederoDestino(txtDestinatario.getText());
             double monto = OperacionController.parseMonto(txtMonto.getText());
-            resultado[0] = op.transferir(cliente, origen, destino, monto, txtConcepto.getText());
-        });
-        if (error != null) {
-            ViewUtil.mensaje(lblMensajeEnvio, "✖ " + error, false);
+            mensaje = op.transferir(cliente, origen, destino, monto, txtConcepto.getText());
+        } catch (MonederoException e) {
+            ViewUtil.mensaje(lblMensajeEnvio, "✖ " + e.getMessage(), false);
             return;
         }
         txtDestinatario.clear();
         txtMonto.clear();
         txtConcepto.clear();
         refrescar();
-        ViewUtil.mensaje(lblMensajeEnvio, "✔ " + resultado[0], true);
-        if (resultado[0].contains("sospechosa")) ViewUtil.advertencia(resultado[0]);
+        ViewUtil.mensaje(lblMensajeEnvio, "✔ " + mensaje, true);
+        if (mensaje.contains("sospechosa")) ViewUtil.advertencia(mensaje);
     }
 
     private void recargarSaldo() {
-        String[] resultado = new String[1];
-        String error = ViewUtil.intentar(() ->
-                resultado[0] = op.recargar(cliente, principal(), OperacionController.parseMonto(txtMontoRecarga.getText())));
-        if (error != null) {
-            ViewUtil.mensaje(lblMensajeRecarga, "✖ " + error, false);
+        String mensaje;
+        try {
+            double monto = OperacionController.parseMonto(txtMontoRecarga.getText());
+            mensaje = op.recargar(cliente, principal(), monto);
+        } catch (MonederoException e) {
+            ViewUtil.mensaje(lblMensajeRecarga, "✖ " + e.getMessage(), false);
             return;
         }
         txtMontoRecarga.clear();
         refrescar();
-        ViewUtil.mensaje(lblMensajeRecarga, "✔ " + resultado[0], true);
-        if (resultado[0].contains("sospechosa")) ViewUtil.advertencia(resultado[0]);
+        ViewUtil.mensaje(lblMensajeRecarga, "✔ " + mensaje, true);
+        if (mensaje.contains("sospechosa")) ViewUtil.advertencia(mensaje);
     }
 
     private void abrirMonederos() {
@@ -260,16 +428,21 @@ public class MonederoViewController {
 
     public void mostrarSeccion(String seccion) {
         if (cliente == null) return;
+        String s = seccion == null ? "inicio" : seccion;
         Button activo;
         Node destino;
-        switch (seccion == null ? "inicio" : seccion) {
+        boolean verProgramadas = s.equals("programadas");
+        ViewUtil.mostrar(cardProgramadas, verProgramadas);
+        switch (s) {
             case "enviar": activo = btnEnviar; destino = txtDestinatario; break;
             case "recargar": activo = btnRecargar; destino = txtMontoRecarga; break;
             case "historial": activo = btnHistorial; destino = tblMovimientos; break;
+            case "programadas": activo = btnProgramadas; destino = tblProgramadas; break;
             default: activo = btnInicio; destino = null; break;
         }
         ViewUtil.activar(activo, "nav-button", "nav-button-active",
-                btnInicio, btnEnviar, btnRecargar, btnHistorial, btnBeneficiosNav, btnTarjetas, btnConfiguracion);
+                btnInicio, btnEnviar, btnRecargar, btnHistorial, btnProgramadas, btnBeneficiosNav, btnTarjetas, btnConfiguracion);
+        if (verProgramadas) cargarProgramadas();
         desplazarA(destino);
         if (destino instanceof TextField) Platform.runLater(destino::requestFocus);
     }

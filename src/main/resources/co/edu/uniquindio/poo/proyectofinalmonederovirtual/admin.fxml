@@ -14,12 +14,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<!--
-  Para conectar el controlador, agrega en BorderPane:
-  fx:controller="tu.paquete.AdminController"
--->
-
-<BorderPane fx:id="rootAdmin" prefHeight="780.0" prefWidth="1280.0" styleClass="root-pane" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane fx:id="rootAdmin" fx:controller="co.edu.uniquindio.poo.proyectofinalmonederovirtual.viewController.AdminViewController" prefHeight="780.0" prefWidth="1280.0" styleClass="root-pane" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1">
    <stylesheets>
       <URL value="@monedero.css" />
       <URL value="@extras.css" />
@@ -133,6 +128,13 @@
                               <Label styleClass="stat-icon" text="🎟" />
                               <Label styleClass="stat-caption" text="Canjes pendientes" />
                               <Label fx:id="lblCanjesPendientes" styleClass="stat-value" text="12" />
+                           </children>
+                        </VBox>
+                        <VBox maxWidth="1.7976931348623157E308" spacing="6.0" styleClass="stat-card-orange" HBox.hgrow="ALWAYS">
+                           <children>
+                              <Label styleClass="stat-icon" text="⏰" />
+                              <Label styleClass="stat-caption" text="Transacciones programadas" />
+                              <Button fx:id="btnProcesarProgramadas" mnemonicParsing="false" styleClass="primary-button, small-button" text="⏰ Procesar ahora" />
                            </children>
                         </VBox>
                      </children>

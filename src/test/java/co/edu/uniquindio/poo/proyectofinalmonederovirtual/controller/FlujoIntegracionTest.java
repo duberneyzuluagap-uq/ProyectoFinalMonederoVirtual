@@ -14,8 +14,9 @@ class FlujoIntegracionTest {
         Banco banco = new Banco("MiMonedero", "900123456-7");
         NotificacionFalsa notif = new NotificacionFalsa();
         UsuarioController usuarios = new UsuarioController(banco);
+        ProcesadorTransaccionesProgramadas proc = new ProcesadorTransaccionesProgramadas(notif);
         OperacionController op = new OperacionController(banco, new TransaccionController(banco), new MonederoController(banco),
-                new AlertaController(), new DetectorAtipicasController(notif), notif);
+                new AlertaController(), new DetectorAtipicasController(notif), notif, proc);
         op.registrarAdmin("Root", "admin", "admin123", "admin@mail.com");
         op.registrarCliente("Ana", "ana", "1234", "ana@mail.com", "1001001001", "d", "3001112233");
 
@@ -35,8 +36,9 @@ class FlujoIntegracionTest {
         Banco banco = new Banco("MiMonedero", "900123456-7");
         NotificacionFalsa notif = new NotificacionFalsa();
         TransaccionController tc = new TransaccionController(banco);
+        ProcesadorTransaccionesProgramadas proc = new ProcesadorTransaccionesProgramadas(notif);
         OperacionController op = new OperacionController(banco, tc, new MonederoController(banco),
-                new AlertaController(), new DetectorAtipicasController(notif), notif);
+                new AlertaController(), new DetectorAtipicasController(notif), notif, proc);
         Cliente ana = op.registrarCliente("Ana", "ana", "1234", "ana@mail.com", "1001001001", "d", "3001112233");
         Cliente luis = op.registrarCliente("Luis", "luis", "1234", "luis@mail.com", "2002002002", "d", "3109998877");
         Monedero am = ana.getListaMonederos().get(0), lm = luis.getListaMonederos().get(0);
