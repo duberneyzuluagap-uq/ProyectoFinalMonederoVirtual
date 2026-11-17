@@ -168,13 +168,11 @@ public class MonederoViewController {
         aplicarFiltro();
     }
 
-    /** Carga las transacciones programadas del cliente en la tabla. */
     private void cargarProgramadas() {
         ObservableList<TransaccionProgramada> items = FXCollections.observableArrayList(cliente.getListaTransaccionesProgramadas());
         tblProgramadas.setItems(items);
     }
 
-    /** Abre un diálogo para crear una nueva transacción programada. */
     private void abrirDialogoNuevaProgramada() {
         if (cliente.getListaMonederos().isEmpty()) {
             ViewUtil.advertencia("Primero crea al menos un monedero.");
@@ -279,7 +277,6 @@ public class MonederoViewController {
         d.showAndWait();
     }
 
-    /** Elimina la transacción programada seleccionada. */
     private void eliminarProgramada() {
         TransaccionProgramada sel = tblProgramadas.getSelectionModel().getSelectedItem();
         if (sel == null) { ViewUtil.advertencia("Selecciona una transacción programada."); return; }
@@ -293,11 +290,6 @@ public class MonederoViewController {
         }
     }
 
-    /**
-     * Suma el monto de los movimientos de este mes que no estén cancelados.
-     *
-     * @param esIngreso true para sumar solo ingresos, false para sumar solo gastos
-     */
     private double sumaDelMes(List<Movimiento> movimientos, boolean esIngreso) {
         YearMonth mes = YearMonth.now();
         double total = 0.0;
@@ -350,7 +342,6 @@ public class MonederoViewController {
         filtrados.setPredicate(m -> coincideTexto(m, texto) && coincideCategoria(m, categoria));
     }
 
-    /** Un movimiento coincide con el texto si aparece en la descripción, el tipo o el id. */
     private boolean coincideTexto(Movimiento m, String texto) {
         if (texto.isEmpty()) return true;
         String buscado = texto.toLowerCase();
@@ -359,7 +350,6 @@ public class MonederoViewController {
                 || m.id().toLowerCase().contains(buscado);
     }
 
-    /** Devuelve true si el movimiento pertenece a la categoría seleccionada en el filtro. */
     private boolean coincideCategoria(Movimiento m, String categoria) {
         switch (categoria) {
             case "Ingresos":       return m.ingreso();

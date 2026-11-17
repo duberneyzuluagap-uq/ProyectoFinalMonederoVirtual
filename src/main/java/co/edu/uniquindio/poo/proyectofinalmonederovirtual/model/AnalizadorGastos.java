@@ -6,7 +6,6 @@ import java.util.TreeMap;
 
 public class AnalizadorGastos {
 
-    /** Suma los montos de retiros y transferencias agrupados por tipo de transacción. */
     public Map<String, Double> generarReporteGastos(Cliente cliente) {
         Map<String, Double> gastosPorTipo = new TreeMap<>(); // TreeMap deja las llaves ordenadas (A-Z)
 
@@ -27,7 +26,6 @@ public class AnalizadorGastos {
         return reporte;
     }
 
-    /** Solo cuentan los gastos que todavía están vigentes (no cancelados ni revertidos). */
     private boolean esGastoValido(Transaccion t) {
         boolean esGasto = t instanceof Retiro || t instanceof Transferencia;
         boolean anulada = t.getEstado() == EstadoTransaccion.CANCELADA

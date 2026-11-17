@@ -58,7 +58,7 @@ public class Cliente extends Usuario {
     public List<TransaccionProgramada> getListaTransaccionesProgramadas() { return listaTransaccionesProgramadas; }
     public void setListaTransaccionesProgramadas(List<TransaccionProgramada> l) { this.listaTransaccionesProgramadas = l; }
 
-    /** Suma puntos (positivos) o los descuenta en un canje (negativos), y recalcula puntos y rango. */
+
     public void acumularPuntos(int puntos) {
         if (puntos == 0) throw new DatosInvalidosException("Los puntos deben ser distintos de cero.");
         if (puntos < 0 && puntosAcumulados + puntos < 0)
@@ -69,7 +69,6 @@ public class Cliente extends Usuario {
         recalcular();
     }
 
-    /** Recalcula los puntos sumando solo los movimientos no anulados y actualiza el rango. */
     public void recalcular() {
         puntosAcumulados = listaMovimientosPuntos.stream()
                 .filter(m -> !m.isAnulado())
@@ -84,7 +83,6 @@ public class Cliente extends Usuario {
     }
 
 
-    /** Ejecuta la transacción sobre un monedero del cliente, la guarda en el historial y suma sus puntos. */
     public String registrarTransaccion(Transaccion transaccion) {
         if (transaccion == null) throw new DatosInvalidosException("La transacción no puede ser nula.");
         if (buscarMonedero(transaccion.getMonedero().getNumeroCuenta()).isEmpty())
@@ -102,7 +100,6 @@ public class Cliente extends Usuario {
         return "Transacción " + transaccion.getIdTransaccion() + " ejecutada. Puntos ganados: " + puntos;
     }
 
-    /** Revierte la transferencia y anula los puntos que generó; los puntos se recalculan dinámicamente. */
     public String revertirTransferencia(Transferencia transferencia) {
         if (transferencia == null) throw new DatosInvalidosException("La transferencia no puede ser nula.");
         transferencia.revertir();

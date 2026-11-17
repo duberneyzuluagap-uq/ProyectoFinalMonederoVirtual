@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
-/** Recorre un caso de uso completo de punta a punta usando los controladores, como lo haría la interfaz gráfica. */
 class FlujoIntegracionTest {
 
     @Test

@@ -182,13 +182,11 @@ public class AdminViewController {
     //  Acciones de los botones (una por método, para poder señalarlas)
     // ---------------------------------------------------------------
 
-    /** Abre y cierra el submenú del catálogo de beneficios. */
     private void abrirCatalogo() {
         ViewUtil.mostrar(subMenuBeneficiosAdmin, !subMenuBeneficiosAdmin.isVisible() || !cardBeneficiosAdmin.isVisible());
         mostrarSeccion("catalogo");
     }
 
-    /** Abre el formulario para crear un usuario (cliente o administrador). */
     private void nuevoUsuario() {
         FormularioUsuarioDialog.mostrar(null, true).ifPresent(u -> {
             refrescar();
@@ -196,7 +194,6 @@ public class AdminViewController {
         });
     }
 
-    /** Abre el formulario para editar el usuario seleccionado en la tabla. */
     private void editarUsuario() {
         Usuario sel = tblUsuarios.getSelectionModel().getSelectedItem();
         if (sel == null) { aviso("Selecciona un usuario."); return; }
@@ -206,14 +203,12 @@ public class AdminViewController {
         });
     }
 
-    /** Abre el formulario para editar el beneficio seleccionado. */
     private void editarBeneficio() {
         Beneficio sel = tblBeneficiosAdmin.getSelectionModel().getSelectedItem();
         if (sel == null) { aviso("Selecciona un beneficio."); return; }
         if (dialogoBeneficio(sel)) refrescar();
     }
 
-    /** Activa o desactiva el beneficio seleccionado. */
     private void activarBeneficio() {
         Beneficio sel = tblBeneficiosAdmin.getSelectionModel().getSelectedItem();
         if (sel == null) { aviso("Selecciona un beneficio."); return; }
@@ -222,7 +217,6 @@ public class AdminViewController {
         ViewUtil.mensaje(lblMensajeAdmin, "✔ Beneficio " + (activo ? "activado." : "desactivado."), true);
     }
 
-    /** Elimina el beneficio seleccionado (después de pedir confirmación). */
     private void eliminarBeneficio() {
         Beneficio sel = tblBeneficiosAdmin.getSelectionModel().getSelectedItem();
         if (sel == null) { aviso("Selecciona un beneficio."); return; }
@@ -232,7 +226,6 @@ public class AdminViewController {
         ViewUtil.mensaje(lblMensajeAdmin, "✔ " + msg, true);
     }
 
-    /** Aprueba el canje seleccionado. */
     private void aprobarCanje() {
         Canje sel = tblCanjesAdmin.getSelectionModel().getSelectedItem();
         try {
@@ -244,7 +237,6 @@ public class AdminViewController {
         exito("Canje aprobado.");
     }
 
-    /** Rechaza el canje seleccionado y le devuelve los puntos al cliente. */
     private void rechazarCanje() {
         Canje sel = tblCanjesAdmin.getSelectionModel().getSelectedItem();
         if (sel != null && !ViewUtil.confirmar("¿Rechazar el canje? Se devolverán los puntos al cliente.")) return;
@@ -346,7 +338,6 @@ public class AdminViewController {
 
     private void aviso(String texto) { ViewUtil.mensaje(lblMensajeAdmin, "✖ " + texto, false); }
 
-    /** Muestra el mensaje de éxito en la barra de mensajes y vuelve a pintar las tablas. */
     private void exito(String mensaje) {
         refrescar();
         ViewUtil.mensaje(lblMensajeAdmin, "✔ " + mensaje, true);
@@ -597,7 +588,6 @@ public class AdminViewController {
         mostrarTexto("Notificaciones", sb.toString());
     }
 
-    /** Ejecuta las transacciones programadas pendientes de todos los clientes (hoy). */
     private void procesarProgramadas() {
         try {
             op.procesarTodasProgramadas();

@@ -2,7 +2,6 @@ package co.edu.uniquindio.poo.proyectofinalmonederovirtual.model;
 
 import java.time.LocalDate;
 
-/** Fábrica de objetos de prueba para no repetir constructores largos en cada test. */
 public final class TestDatos {
     private TestDatos() {}
 

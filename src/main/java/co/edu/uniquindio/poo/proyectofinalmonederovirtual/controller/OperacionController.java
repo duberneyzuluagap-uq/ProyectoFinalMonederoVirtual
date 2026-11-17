@@ -222,7 +222,6 @@ public class OperacionController {
     //  Validaciones escritas con ciclos y condicionales (sin regex)
     // ------------------------------------------------------------------
 
-    /** Devuelve true si el texto está vacío, es nulo o tiene algo que no sea dígito. */
     private static boolean soloDigitos(String texto) {
         if (texto == null || texto.isEmpty()) return false;
         for (int i = 0; i < texto.length(); i++) {
@@ -231,23 +230,15 @@ public class OperacionController {
         return true;
     }
 
-    /** Devuelve true si el caracter es un dígito del 0 al 9. */
     private static boolean esDigito(char c) {
         return c >= '0' && c <= '9';
     }
 
-    /** Devuelve true si el caracter es una letra (a-z, A-Z) o un dígito. */
     private static boolean esLetraONumero(char c) {
         boolean letra = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
         return letra || esDigito(c);
     }
 
-    /**
-     * Valida un correo con forma de "algo@algo.com":
-     *  - antes del @ solo puede haber letras, números y los símbolos . _ + -
-     *  - después del @ solo puede haber letras, números y los símbolos . _ -
-     *  - y el dominio tiene que tener un punto con algo después: "mail.com"
-     */
     private static boolean correoValido(String correo) {
         if (correo == null) return false;
         String texto = correo.trim();
@@ -266,7 +257,6 @@ public class OperacionController {
         return localOk && dominioOk && hayPunto;
     }
 
-    /** Devuelve true si todos los caracteres son letras, números, punto, guion bajo y los símbolos extra. */
     private static boolean letrasNumerosY(String texto, String simbolosExtra) {
         if (texto.isEmpty()) return false;
         for (int i = 0; i < texto.length(); i++) {
@@ -278,19 +268,16 @@ public class OperacionController {
         return true;
     }
 
-    /** El documento debe tener de 6 a 12 dígitos y nada más. */
     private static boolean documentoValido(String documento) {
         if (documento == null) return false;
         return documento.length() >= 6 && documento.length() <= 12 && soloDigitos(documento);
     }
 
-    /** El teléfono debe tener de 7 a 10 dígitos y nada más. */
     private static boolean telefonoValido(String telefono) {
         if (telefono == null) return false;
         return telefono.length() >= 7 && telefono.length() <= 10 && soloDigitos(telefono);
     }
 
-    /** El usuario debe tener de 3 a 20 caracteres: solo letras, números, punto y guion bajo. */
     private static boolean usuarioValido(String user) {
         if (user == null || user.length() < 3 || user.length() > 20) return false;
         for (int i = 0; i < user.length(); i++) {
@@ -300,12 +287,6 @@ public class OperacionController {
         return true;
     }
 
-    /**
-     * Detecta el formato con separador de miles: "2.000.000" o "1.500".
-     *  - el primer grupo tiene de 1 a 3 dígitos
-     *  - después vienen grupos de punto + exactamente 3 dígitos
-     * "1500.50" no es formato de miles porque antes del punto hay 4 dígitos.
-     */
     private static boolean esFormatoDeMiles(String texto) {
         int posicion = 0;
 
@@ -388,23 +369,16 @@ public class OperacionController {
         return banco.getListaUsuarios().stream().filter(u -> u instanceof Cliente)
                 .flatMap(u -> listarCanjes((Cliente) u).stream()).collect(Collectors.toList());
     }
-    /**
-     * Convierte un movimiento de puntos en un Canje para mostrarlo en pantalla.
-     * El id del movimiento tiene la forma: CANJE-BEN-001-ABC12345
-     *   - "CANJE-"   es el prefijo que marca que es un canje
-     *   - "BEN-001"  es el id del beneficio
-     *   - "ABC12345" es el código del canje (8 caracteres)
-     */
+
     private Canje aCanje(Cliente c, MovimientoPuntos m) {
         String idMovimiento = m.getIdMovimiento();
 
-        // 1) El código del canje son los últimos 8 caracteres
+
         String codigo = idMovimiento.substring(idMovimiento.length() - 8).toUpperCase();
 
-        // 2) Se quita el código y el guion que lo separa -> "CANJE-BEN-001"
+
         String sinCodigo = idMovimiento.substring(0, idMovimiento.length() - 9);
 
-        // 3) Se quita el prefijo "CANJE-" -> "BEN-001"
         String idBeneficio = sinCodigo.startsWith(PREFIJO_CANJE)
                 ? sinCodigo.substring(PREFIJO_CANJE.length())
                 : sinCodigo;
@@ -431,13 +405,7 @@ public class OperacionController {
         notificacion.enviar(canje.cliente(), "Tu canje de «" + canje.beneficio() + "» fue rechazado. Tus puntos fueron devueltos.");
     }
 
-    // ---------------------------
-    //  Transacciones programadas
-    // ---------------------------
 
-    /**
-     * Programa un depósito recurrente en el monedero del cliente.
-     */
     public String programarDeposito(Cliente c, Monedero m, double monto, LocalDate fechaInicio, Frecuencia frecuencia) {
         requerir(m);
         Transaccion t = new Deposito(nuevoId("TX"), monto, fechaInicio, EstadoTransaccion.PENDIENTE, false, m);
@@ -446,9 +414,6 @@ public class OperacionController {
         return "Depósito programado: " + frecuencia + " de $" + String.format("%,.0f", monto) + " a partir del " + fechaInicio.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
 
-    /**
-     * Programa un retiro recurrente en el monedero del cliente.
-     */
     public String programarRetiro(Cliente c, Monedero m, double monto, LocalDate fechaInicio, Frecuencia frecuencia) {
         requerir(m);
         double comision = comisionRetiro(monto);
@@ -458,9 +423,7 @@ public class OperacionController {
         return "Retiro programado: " + frecuencia + " de $" + String.format("%,.0f", monto) + " a partir del " + fechaInicio.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
 
-    /**
-     * Programa una transferencia recurrente entre dos monederos.
-     */
+
     public String programarTransferencia(Cliente c, Monedero origen, Monedero destino, double monto, String concepto, LocalDate fechaInicio, Frecuencia frecuencia) {
         requerir(origen);
         if (destino == null) throw new MonederoInexistenteException("El monedero destino no existe.");
@@ -473,9 +436,7 @@ public class OperacionController {
         return "Transferencia programada: " + frecuencia + " de $" + String.format("%,.0f", monto) + " a partir del " + fechaInicio.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
 
-    /**
-     * Elimina una transacción programada del cliente.
-     */
+
     public String eliminarTransaccionProgramada(Cliente c, String idProgramada) {
         Optional<TransaccionProgramada> prog = c.getListaTransaccionesProgramadas().stream()
                 .filter(p -> p.getIdTransaccion().equals(idProgramada)).findFirst();
@@ -484,10 +445,7 @@ public class OperacionController {
         return "Transacción programada eliminada.";
     }
 
-    /**
-     * Procesa todas las transacciones programadas pendientes de todos los clientes (hoy).
-     * Lo usa el administrador desde el panel de admin.
-     */
+
     public void procesarTodasProgramadas() {
         LocalDate hoy = LocalDate.now();
         for (Usuario u : banco.getListaUsuarios()) {
